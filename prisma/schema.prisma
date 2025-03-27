@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id                    Int                   @id @default(autoincrement())
+  firstName             String
+  lastName              String
+  email                 String                @unique
+  location              String?
+  profilePic            ProfilePicture?
+  phoneNumber           String?
+  password              String
+  bookings              Booking[]
+  notifications         Notification[]
+  darkMode              String                @default("off")      // "on" for light mode, "off" for dark mode
+  hotels                Hotel[]           
+}
+
+model Hotel {
+  id         Int        @id @default(autoincrement())
+  ownerId    Int
+  name       String
+  logoId     Int?       @unique
+  address    String
+  city       String
+  starRating Int
+  images     Image[]
+  roomTypes  RoomType[]
+  bookings   Booking[]
+  logo       Logo?
+
+  owner      User       @relation(fields:[ownerId], references:[id], onDelete: Cascade)
+}
+
+model RoomType {
+  id               Int        @id @default(autoincrement())
+  hotelId          Int
+  type             String
+  totalRooms       Int
+  amenities        String
+  pricePerNight    Float
+  images           Image[]
+  hotel            Hotel      @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  bookings         Booking[]
+}
+
+model Image {
+  id           Int       @id @default(autoincrement())
+  fileName     String
+  hotelId      Int
+  roomTypeId   Int?
+
+  hotel        Hotel     @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomType     RoomType? @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+}
+
+model ProfilePicture {
+  id          Int        @id @default(autoincrement())
+  fileName    String
+  userId      Int?       @unique
+
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Logo {
+  id          Int        @id @default(autoincrement())
+  fileName    String
+  hotelId     Int?       @unique
+
+  hotel       Hotel?     @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id                 Int       @id @default(autoincrement())
+  userId             Int
+  hotelId            Int?
+  roomTypeId         Int?
+  flightId           String?
+  checkInDate        DateTime?
+  checkOutDate       DateTime?
+  flightFrom         String?
+  flightTo           String?
+  departureTime      DateTime?
+  arrivalTime        DateTime?
+  price              Float
+  verificationStatus String    // e.g., pending, verified
+  paymentStatus      String    // e.g., pending, completed
+  createdAt          DateTime  @default(now())
+  invoiceFileUrl     String?   // URL to the generated PDF invoice
+  
+  flight         Flight?     @relation(fields: [flightId], references: [id], onDelete: Cascade)
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hotel          Hotel?     @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomType       RoomType?  @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  message     String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model City {
+  city        String   @id
+  country     String
+}
+
+model Airport {
+  id          String   @id
+  code        String
+  name        String
+  city        String
+  country     String
+}
+
+model Flight {
+  id            String       @id
+  origin        String
+  destination   String
+  departureTime DateTime
+  arrivalTime   DateTime
+  price         Float
+  legs          Int
+
+  bookings      Booking[] // Has many bookings (One-to-Many)
+}
