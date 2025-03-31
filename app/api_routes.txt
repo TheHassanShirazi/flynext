@@ -1,0 +1,43 @@
+/api
+├── /auth
+│   ├── POST /signup          # User sign up
+│   ├── POST /login           # User login
+│   ├── POST /logout          # User logout
+│   ├── GET /profile          # Get user profile details
+│   ├── PUT /profile          # Update user profile details
+│   ├── POST /profile-picture # Add profile picture
+|   ├── DELETE /profile       # Delete user account
+│   ├── PUT /settings         # Update user settings
+│   └── POST /refresh         # Refresh access token
+|
+├── /flights
+│   ├── GET /search           # Search for flights
+│   └── GET /autocomplete     # Autocomplete search with cities, airports
+│
+├── /hotels
+│   ├── POST /                                        # Add new hotel
+│   ├── GET /search                                   # Search hotels (with filters)
+│   ├── GET /{hotelId}                                # Get hotel details
+│   ├── PUT /{hotelId}                                # Update hotel details
+|   ├── POST /{hotelId}/logo                          # Add the logo for a hotel
+|   ├── POST /{hotelId}/image                         # Add new image to a hotel
+|   ├── POST /{hotelId}/roomTypes                     # Add new room type to a hotel
+|   ├── POST /{hotelId}/roomTypes/{roomTypeId}/image  # Add new image for a hotel's room type
+│   ├── GET /{hotelId}/bookings                       # View hotel bookings list
+│   ├── PUT /{hotelId}/bookings/{bookingId}           # Cancel a specific hotel reservation
+│   ├── GET /{hotelId}/availability                   # View room availability per type(optional) for specific date range(optional)
+│   └── PUT /{hotelId}/availability                   # Update room availability (cancels random booking)
+|
+├── /bookings
+│   ├── POST /                          # Create a new booking (flight/hotel or both)
+│   ├── GET /                           # List all bookings for a user
+│   ├── GET /{bookingId}                # Get booking details
+│   ├── PUT /{bookingId}                # Cancel booking (or part of it)
+│   └── POST /{bookingId}/suggestions   # Get flight/hotel suggestions for booking
+|
+├── /notifications
+│   ├── GET /                        # Get all notifications for user
+│   └── PUT /{notificationId}        # Update a notification to 'read'
+|
+└── /image
+    └── GET /        # Get image

@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  flynext:
+    build:
+      context: .
+    image: flynext-image
+    ports:
+      - "3000:3000"
+    develop:
+      watch:
+        - action: sync
+          path: /app
+          target: /app
+          ignore:
+          - /node_modules
+        - action: rebuild
+          path: package.json
+    depends_on:
+      - postgres
