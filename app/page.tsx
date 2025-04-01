@@ -24,6 +24,7 @@ function Calendar({ onSelect, onClose, selectedDates }: {
   const [selecting, setSelecting] = useState<'start' | 'end'>('start');
   const [tempDates, setTempDates] = useState(selectedDates);
 
+
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
@@ -335,6 +336,9 @@ function Navbar() {
           </a>
             <Button className="!py-2" onClick={() => window.location.href = '/signup'}>
             Sign in
+            </Button>
+            <Button className="!py-2" onClick={() => window.location.href = '/login'}>
+            Login
             </Button>
         </div>
       </div>

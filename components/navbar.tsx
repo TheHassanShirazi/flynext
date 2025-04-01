@@ -32,7 +32,10 @@ export default function Navbar() {
           </Link>
           <Button className="!py-2" onClick={() => window.location.href = '/signup'}>
             Sign in
-          </Button>
+            </Button>
+            <Button className="!py-2" onClick={() => window.location.href = '/login'}>
+            Login
+            </Button>
         </div>
       </div>
     </nav>
