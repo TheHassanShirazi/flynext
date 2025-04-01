@@ -97,6 +97,9 @@ model Booking {
   paymentStatus      String    // e.g., pending, completed
   createdAt          DateTime  @default(now())
   invoiceFileUrl     String?   // URL to the generated PDF invoice
+
+  itineraryId        Int
+  itinerary          Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
   
   flight         Flight?     @relation(fields: [flightId], references: [id], onDelete: Cascade)
   user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -135,6 +138,14 @@ model Flight {
   arrivalTime   DateTime
   price         Float
   legs          Int
+  itineraryId        Int
+  itinerary          Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
 
   bookings      Booking[] // Has many bookings (One-to-Many)
+}
+
+model Itinerary {
+  id            Int       @id @default(autoincrement())
+  bookings      Booking[]
+  flights       Flight[]
 }
