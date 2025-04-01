@@ -333,9 +333,9 @@ function Navbar() {
           <a href="/itinerary" className="text-gray-600 hover:text-blue-600">
             My trips
           </a>
-          <Button className="!py-2">
+            <Button className="!py-2" onClick={() => window.location.href = '/signup'}>
             Sign in
-          </Button>
+            </Button>
         </div>
       </div>
     </nav>
