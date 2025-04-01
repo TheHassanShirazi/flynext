@@ -1,5 +1,7 @@
 "use client";
 
+import React from 'react';
+
 function Button({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <button className={`text-white px-6 py-3 rounded-full bg-black hover:bg-gray-800 transition-colors duration-300 ${className}`}>
