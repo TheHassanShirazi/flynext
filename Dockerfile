@@ -10,11 +10,6 @@ RUN npm install
 # Copy the rest of the app code
 COPY . .
 
-RUN npx prisma generate
-
-# Run migrations for production
-RUN npx prisma migrate deploy
-
 # Expose the port
 EXPOSE 3000
 
