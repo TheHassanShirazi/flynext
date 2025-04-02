@@ -15,7 +15,7 @@ export default function LoginPage() {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3000/api/auth/login', { // Corrected API endpoint
+            const response = await fetch('http://localhost:3000/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -23,15 +23,32 @@ export default function LoginPage() {
                 body: JSON.stringify({ email, password }),
             });
 
-            if (response.ok) {
-                const tokens = await response.json();
-                localStorage.setItem('accessToken', tokens.accessToken);
-                localStorage.setItem('userId', tokens.user.id); // Assuming the response has a user object with id
-                router.push('/dashboard'); // or your desired route
-            } else {
-                const data = await response.json();
-                setError(data.error || 'Login failed. Please check your credentials.');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Login failed. Please check your credentials.');
             }
+
+            const tokens = await response.json();
+            localStorage.setItem('accessToken', tokens.accessToken);
+            localStorage.setItem('refreshToken', tokens.refreshToken); // Store refresh token
+
+            // Fetch the user's first name using the access token
+            const userResponse = await fetch('http://localhost:3000/api/auth/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${tokens.accessToken}`,
+                },
+            });
+
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch user details.');
+            }
+
+            const userData = await userResponse.json();
+            localStorage.setItem('firstName', userData.user.firstName); // Store the first name in localStorage
+
+            router.push('http://localhost:3000/'); // Redirect to dashboard or desired route
+
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
         }
