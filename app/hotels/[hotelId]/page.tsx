@@ -16,7 +16,7 @@ interface RoomType {
   bedType: string;
   amenities: string[];
   price: number;
-  images: string[];
+  images: { fileName: string }[];
   available: boolean;
 }
 
@@ -25,7 +25,7 @@ interface Hotel {
   name: string;
   description: string;
   address: string;
-  images: string[];
+  images: { fileName: string }[];
   rating: number;
   reviews: number;
   highlights: string[];
@@ -94,7 +94,7 @@ export default function HotelDetails() {
           {hotel.images && hotel.images.length > 0 && (
             <>
               <Image
-                src={hotel.images[activeImageIndex]}
+                src={`/uploads/${hotel.images[activeImageIndex].fileName}.jpg`}
                 alt={`${hotel.name} - Image ${activeImageIndex + 1}`}
                 fill
                 style={{ objectFit: "cover" }}
