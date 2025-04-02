@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/navbar'; // Assuming you have a Navbar component
+import Navbar from '@/components/navbar';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -15,7 +15,7 @@ export default function LoginPage() {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3000/api/login', {
+            const response = await fetch('http://localhost:3000/api/auth/login', { // Corrected API endpoint
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -23,23 +23,23 @@ export default function LoginPage() {
                 body: JSON.stringify({ email, password }),
             });
 
-            if (!response.ok) {
+            if (response.ok) {
+                const tokens = await response.json();
+                localStorage.setItem('accessToken', tokens.accessToken);
+                localStorage.setItem('userId', tokens.user.id); // Assuming the response has a user object with id
+                router.push('/dashboard'); // or your desired route
+            } else {
                 const data = await response.json();
-                localStorage.setItem('userId', data.userId);
-                localStorage.setItem('accessToken', data.accessToken);
-                throw new Error(data.error || 'Failed to login');
+                setError(data.error || 'Login failed. Please check your credentials.');
             }
-
-            // Redirect to dashboard or home page on successful login
-            router.push('/dashboard');
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || 'An unexpected error occurred.');
         }
     };
 
     return (
         <>
-            <Navbar /> {/* Include the Navbar component */}
+            <Navbar />
             <div className="flex items-center justify-center min-h-screen bg-gray-100">
                 <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
                     <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
