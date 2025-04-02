@@ -4,12 +4,9 @@ import Navbar from "@/components/navbar"
 import { Box, InputLabel, Select, TextField, Typography, SelectChangeEvent, MenuItem, FormControl, Button } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
-
+import { redirect } from 'next/navigation';
 
 export default function HotelBooking() {
-
-    const router = useRouter();
 
     const params = useSearchParams();
     const hotelId = params.get('hotelId');
@@ -18,12 +15,12 @@ export default function HotelBooking() {
     const [hotel, setHotel] = useState(null);
     const [roomType, setRoomType] = useState(null);
     const [itineraries, setItineraries] = useState([]);
-    const [itineraryId, setItineraryId] = useState('');
+    const [itineraryName, setItineraryName] = useState('');
     const [checkInDate, setCheckInDate] = useState('');
     const [checkOutDate, setCheckOutDate] = useState('');
 
     const handleItineraryChange = (event: SelectChangeEvent) => {
-        setItineraryId(event.target.value as string);
+        setItineraryName(event.target.value as string);
     };
 
     const handleCheckInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,17 +38,15 @@ export default function HotelBooking() {
             roomTypeId,
             checkInDate,
             checkOutDate,
-            itineraryId,
+            itineraryName,
         };
 
         try {
-            
-            const accessToken = localStorage.getItem('accessToken');
+            // Send form data to a dummy URL (replace with your actual URL)
             const response = await fetch('http://localhost:3000/api/bookings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'lol ' + accessToken
                 },
                 body: JSON.stringify(formData),
             });
@@ -60,8 +55,7 @@ export default function HotelBooking() {
                 console.log('Form submitted successfully!');
                 const bookingData = await response.json();
                 const bookingId = bookingData.id;
-                console.log(bookingData);
-                router.push(`/payment/${bookingId}`);
+                redirect(`/payment/${bookingId}`);
             } else {
                 console.error('Form submission failed.');
                 // Handle error (e.g., show an error message)
@@ -101,7 +95,7 @@ export default function HotelBooking() {
                 const itinerariesData = await itinerariesResponse.json(); // Parse the JSON response
                 setItineraries(itinerariesData);
                 if (itinerariesData.length > 0) {
-                    setItineraryId(itinerariesData[0].id); // Set default itineraryId
+                    setItineraryName(itinerariesData[0].name); // Set default itineraryName
                 }
             } catch (error) {
                 console.log(error);
@@ -115,13 +109,13 @@ export default function HotelBooking() {
         if (hotel) console.log("Hotel data:", hotel);
         if (roomType) console.log("Room Type data:", roomType);
         if (itineraries) console.log("Itineraries:", itineraries);
-        if (itineraryId) console.log("Itinerary id:", itineraryId);
-    }, [hotel, roomType, itineraries, itineraryId]);
+        if (itineraryName) console.log("Itinerary name:", itineraryName);
+    }, [hotel, roomType, itineraries, itineraryName]);
 
     return (
         <div className="bg-white">
             <Navbar />
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'ffffff', height: '100vh', width: '100vw', marginY: '-5rem' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'ffffff', height: '100vh', width: '100vw' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'left', height: '50vh', width: '50vw', padding: '2rem', backgroundColor: 'ffffff' }}>
                     <Typography variant="h4" sx={{ marginY: '3rem', color: '#011010', fontWeight: '500' }}>Make a booking</Typography>
 
@@ -130,7 +124,7 @@ export default function HotelBooking() {
                     </Typography>
 
                     <Typography variant="h5" sx={{ marginY: '1rem', color: '#011010', fontWeight: '500' }}>
-                        {roomType ? (roomType.type + ": $" + roomType.pricePerNight + " nightly") : 'Loading room type data...'}
+                        {roomType ? roomType.type : 'Loading room type data...'}
                     </Typography>
 
                     <TextField
@@ -155,13 +149,12 @@ export default function HotelBooking() {
                         <Select
                             labelId="itinerary-label"
                             id="itinerary-select"
-                            value={itineraryId}
+                            value={itineraryName}
                             label="Itinerary"
                             onChange={handleItineraryChange}
-                            defaultValue=""
                         >
                             {itineraries.map((itinerary, i) => (
-                                <MenuItem value={itinerary.id} key={i}>{itinerary.name}</MenuItem>
+                                <MenuItem value={itinerary.name} key={i}>{itinerary.name}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
