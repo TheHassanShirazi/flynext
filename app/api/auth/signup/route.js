@@ -18,7 +18,7 @@ export async function POST(request) {
     if (user) {
       return NextResponse.json({ error: 'email already exists' }, { status: 400 });
     }
-
+    
     // Hash the user's password before storing
     const hashedPassword = await hashPassword(password);
     // Create new user in database
@@ -33,8 +33,10 @@ export async function POST(request) {
         hotels: {}                    // Initialize empty hotels relation
       }
     });
+    
     return NextResponse.json({ user: newUser });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }

@@ -7,8 +7,8 @@ const mockHotel = {
   description: "Luxurious hotel with stunning river views",
   address: "123 Riverside Drive, Toronto, ON M5A 1B2",
   images: [
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-    "https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1025&q=80"
+    { fileName: "hotel-exterior-1" },
+    { fileName: "hotel-exterior-2" }
   ],
   rating: 8.8,
   reviews: 10,
@@ -24,7 +24,7 @@ const mockHotel = {
       amenities: ["Free WiFi", "Air Conditioning", "Private Bathroom"],
       price: 199,
       images: [
-        "https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80"
+        { fileName: "superior-room-1" }
       ],
       available: true
     }

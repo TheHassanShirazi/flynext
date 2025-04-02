@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/navbar'; // Assuming you have a Navbar component
+import Navbar from '@/components/navbar';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -15,7 +15,7 @@ export default function LoginPage() {
         setError('');
 
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('http://localhost:3000/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -24,20 +24,39 @@ export default function LoginPage() {
             });
 
             if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || 'Failed to login');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Login failed. Please check your credentials.');
             }
 
-            // Redirect to dashboard or home page on successful login
-            router.push('/dashboard');
+            const tokens = await response.json();
+            localStorage.setItem('accessToken', tokens.accessToken);
+            localStorage.setItem('refreshToken', tokens.refreshToken); // Store refresh token
+
+            // Fetch the user's first name using the access token
+            const userResponse = await fetch('http://localhost:3000/api/auth/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${tokens.accessToken}`,
+                },
+            });
+
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch user details.');
+            }
+
+            const userData = await userResponse.json();
+            localStorage.setItem('firstName', userData.user.firstName); // Store the first name in localStorage
+
+            router.push('http://localhost:3000/'); // Redirect to dashboard or desired route
+
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || 'An unexpected error occurred.');
         }
     };
 
     return (
         <>
-            <Navbar /> {/* Include the Navbar component */}
+            <Navbar />
             <div className="flex items-center justify-center min-h-screen bg-gray-100">
                 <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
                     <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>

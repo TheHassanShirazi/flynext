@@ -27,7 +27,8 @@ export default function SignupPage() {
         setError('');
 
         try {
-            const response = await fetch('/api/signup', {
+            console.log(JSON.stringify(formData));
+            const response = await fetch('http://localhost:3000/api/auth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -35,7 +36,30 @@ export default function SignupPage() {
                 body: JSON.stringify(formData),
             });
 
-            if (!response.ok) {
+            if (response.status === 200) {
+                
+                const data = await response.json();
+                const user = data.user;
+                console.log(user);
+
+                const tokenData = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: formData.email,
+                        password: formData.password
+                    }),
+                });
+
+                const tokens = await tokenData.json();
+                console.log(user);
+                const accessToken = tokens.accessToken;
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('userId', user.id);
+
+            } else {
                 const contentType = response.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
                     const text = await response.text();
@@ -43,12 +67,10 @@ export default function SignupPage() {
                     setError('Server Error: Unexpected response format.');
                     return;
                 }
-                const data = await response.json();
-                setError(data.error || 'Something went wrong on the server.'); // set the error from the server
-                return; //stop the function from running.
+                setError('You already have an account!'); // set the error from the server
             }
 
-            router.push('/welcome');
+            router.push('/');
         } catch (err: any) {
             console.error("Client side error", err); //log client side errors.
             setError(err.message || 'An unexpected error occurred.');
@@ -116,7 +138,6 @@ export default function SignupPage() {
                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                         />
                         <Button
-                            type="submit"
                             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300 font-semibold"
                         >
                             Sign Up

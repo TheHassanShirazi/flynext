@@ -23,7 +23,8 @@ model User {
   bookings              Booking[]
   notifications         Notification[]
   darkMode              String                @default("off")      // "on" for light mode, "off" for dark mode
-  hotels                Hotel[]           
+  hotels                Hotel[]
+  itinerary             Itinerary[]
 }
 
 model Hotel {
@@ -39,7 +40,7 @@ model Hotel {
   bookings   Booking[]
   logo       Logo?
 
-  owner      User       @relation(fields:[ownerId], references:[id], onDelete: Cascade)
+  owner        User       @relation(fields:[ownerId], references:[id], onDelete: Cascade)
 }
 
 model RoomType {
@@ -138,15 +139,15 @@ model Flight {
   arrivalTime   DateTime
   price         Float
   legs          Int
-  itineraryId        Int
-  itinerary          Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
 
   bookings      Booking[] // Has many bookings (One-to-Many)
 }
 
 model Itinerary {
   id            Int       @id @default(autoincrement())
+  userId        Int      
   name          String
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookings      Booking[]
-  flights       Flight[]
 }

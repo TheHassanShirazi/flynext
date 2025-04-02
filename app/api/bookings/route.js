@@ -8,6 +8,7 @@ export async function POST(request) {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     // Extract booking details from request body
     const { flightId, hotelId, roomTypeId, checkInDate, checkOutDate, departureTime, arrivalTime, destination, itineraryId } = await request.json();
+    console.log("itinerary id given: " + itineraryId);
     
     if (!token) {
         return NextResponse.json({ error: 'No token provided' }, { status: 401 });
@@ -69,8 +70,7 @@ export async function POST(request) {
                 departureTime: data.departureTime,
                 arrivalTime: data.arrivalTime,
                 price: data.price,
-                legs: flight.legs,
-                itineraryId
+                legs: flight.legs
             });
 
             await prisma.flight.create({
@@ -81,15 +81,14 @@ export async function POST(request) {
                     departureTime: data.departureTime,
                     arrivalTime: data.arrivalTime,
                     price: data.price,
-                    legs: flight.legs,
-                    itineraryId
+                    legs: flight.legs
                 }
             })
         }
         if (hotelId) {
-            data.hotelId = hotelId;
+            data.hotelId = parseInt(hotelId);
             const hotel = await prisma.hotel.findUnique({
-                where: { id: hotelId },
+                where: { id: data.hotelId },
             });
 
             if (!hotel) {
@@ -99,12 +98,13 @@ export async function POST(request) {
                 return NextResponse.json({ error: 'Room type not submitted' }, { status: 404 });
             }
 
+            data.roomTypeId = parseInt(roomTypeId);
             const roomType = await prisma.roomType.findUnique({
-                where: { id: roomTypeId },
+                where: { id: data.roomTypeId },
             });
-
-            data.roomTypeId = roomTypeId;
+            
             data.price = roomType.pricePerNight;
+            data.itineraryId = itineraryId;
         }
 
         const response = await prisma.booking.create({
@@ -121,7 +121,7 @@ export async function POST(request) {
         if (hotelId) {
 
             const hotel = await prisma.hotel.findUnique({
-                where: { id: hotelId },
+                where: { id: data.hotelId },
             })
 
             const owner = await prisma.user.findUnique({
@@ -138,6 +138,7 @@ export async function POST(request) {
         
         return NextResponse.json(response, { status: 200 });
     } catch (error) {
+        console.log(error.message);
         return NextResponse.json(error.message, { status: 401 });
     }
 }
