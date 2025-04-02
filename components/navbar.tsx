@@ -27,11 +27,11 @@ export default function Navbar() {
           <Link href="/list-property" className="text-gray-600 hover:text-blue-600">
             List your hotel
           </Link>
-          <Link href="/itinerary" className="text-gray-600 hover:text-blue-600">
+          <Link href="/itineraries" className="text-gray-600 hover:text-blue-600">
             My trips
           </Link>
           <Button className="!py-2" onClick={() => window.location.href = '/signup'}>
-            Sign in
+            Sign up
             </Button>
             <Button className="!py-2" onClick={() => window.location.href = '/login'}>
             Login
