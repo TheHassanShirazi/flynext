@@ -85,7 +85,7 @@ export default function HotelSearchPage() {
             {hotels.length}+ properties
           </h1>
           <div className="flex items-center gap-4">
-            <select className="px-4 py-2 border rounded-lg bg-white text-gray-700">
+            <select className="px-4 py-2 border rounded-lg bg-white text-gray-700 font-medium">
               <option>Recommended</option>
               <option>Price: Low to High</option>
               <option>Price: High to Low</option>
@@ -116,31 +116,31 @@ export default function HotelSearchPage() {
                       <div>
                         <h2
                           onClick={() => router.push(`/hotels/${hotel.id}`)}
-                          className="text-xl font-semibold mb-2 cursor-pointer hover:text-blue-600"
+                          className="text-2xl font-bold text-gray-900 mb-2 cursor-pointer hover:text-blue-600"
                         >
                           {hotel.name}
                         </h2>
-                        <p className="text-gray-600 mb-2">{hotel.address}</p>
-                        <div className="flex items-center gap-2 mb-4">
-                          <span className="px-2 py-1 bg-green-600 text-white rounded-lg text-sm">
+                        <p className="text-base text-gray-700 mb-2 font-medium">{hotel.address}</p>
+                        <div className="flex items-center gap-3 mb-4">
+                          <span className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-base font-semibold">
                             {hotel.rating}/10
                           </span>
-                          <span className="text-gray-600 text-sm">
+                          <span className="text-gray-700 font-medium">
                             {hotel.reviews} reviews
                           </span>
                         </div>
-                        <p className="text-gray-700">{hotel.description}</p>
+                        <p className="text-base text-gray-600 leading-relaxed">{hotel.description}</p>
                       </div>
 
                       {/* Price and CTA */}
                       <div className="text-right">
-                        <p className="text-sm text-gray-500">Starting from</p>
-                        <p className="text-2xl font-bold text-blue-600 mb-2">
+                        <p className="text-sm font-medium text-gray-500 mb-1">Starting from</p>
+                        <p className="text-3xl font-bold text-blue-600 mb-3">
                           ${Math.min(...hotel.roomTypes.map((room) => room.price))}
                         </p>
                         <button
                           onClick={() => toggleRoomList(hotel.id)}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          className="px-6 py-2.5 bg-blue-600 text-white text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                         >
                           {expandedHotel === hotel.id ? 'Hide Rooms' : 'See Available Rooms'}
                         </button>
@@ -149,27 +149,27 @@ export default function HotelSearchPage() {
 
                     {/* Room List */}
                     {expandedHotel === hotel.id && (
-                      <div className="mt-6 border-t pt-4">
+                      <div className="mt-6 border-t pt-6">
                         <div className="space-y-4">
                           {hotel.roomTypes.map((room) => (
                             <div
                               key={room.id}
-                              className="flex justify-between items-center p-4 bg-gray-50 rounded-lg"
+                              className="flex justify-between items-center p-5 bg-gray-50 rounded-lg"
                             >
                               <div>
-                                <h3 className="font-semibold">{room.name}</h3>
-                                <p className="text-gray-600">{room.description}</p>
+                                <h3 className="text-lg font-bold text-gray-900 mb-1">{room.name}</h3>
+                                <p className="text-base text-gray-600">{room.description}</p>
                               </div>
                               <div className="text-right">
-                                <p className="text-2xl font-bold text-blue-600 mb-2">
+                                <p className="text-2xl font-bold text-blue-600 mb-3">
                                   ${room.price}
                                 </p>
                                 <button
                                   onClick={() => handleBookRoom(hotel.id, room.id)}
-                                  className={`px-4 py-2 rounded-lg ${
+                                  className={`px-6 py-2.5 rounded-lg text-base font-semibold ${
                                     room.available
                                       ? 'bg-green-600 text-white hover:bg-green-700'
-                                      : 'bg-gray-300 cursor-not-allowed'
+                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                   } transition-colors`}
                                   disabled={!room.available}
                                 >

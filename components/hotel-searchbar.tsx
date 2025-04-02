@@ -38,7 +38,7 @@ function HotelSearchBar() {
             <input
               type="text"
               placeholder="Where are you going?"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-base font-medium text-gray-900 placeholder-gray-500"
             />
           </div>
           
@@ -47,7 +47,7 @@ function HotelSearchBar() {
             <input
               type="text"
               placeholder="Select dates"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-base font-medium text-gray-900 placeholder-gray-500"
             />
           </div>
           
@@ -56,14 +56,14 @@ function HotelSearchBar() {
             <input
               type="text"
               placeholder="2 travelers, 1 room"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-base font-medium text-gray-900 placeholder-gray-500"
             />
           </div>
         </div>
         
         <button
           onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-          className="mt-4 text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+          className="mt-4 text-blue-600 hover:text-blue-700 font-semibold text-base flex items-center gap-2"
         >
           {isFiltersOpen ? 'Hide Filters' : 'Show Filters'}
         </button>
@@ -72,7 +72,7 @@ function HotelSearchBar() {
           <div className="mt-4 p-4 border-t border-gray-200">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Typography component="legend" className="text-gray-700 mb-2">
+                <Typography className="text-base font-semibold text-gray-900 mb-3">
                   Star Rating
                 </Typography>
                 <Rating
@@ -84,7 +84,7 @@ function HotelSearchBar() {
               </div>
               
               <div>
-                <Typography className="text-gray-700 mb-2">
+                <Typography className="text-base font-semibold text-gray-900 mb-3">
                   Price Range
                 </Typography>
                 <Box sx={{ width: '100%', px: 2 }}>
@@ -111,7 +111,7 @@ function HotelSearchBar() {
       
       <button
         onClick={() => handleSearch(new URLSearchParams())}
-        className="absolute right-4 top-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        className="absolute right-4 top-4 bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-base font-semibold"
       >
         Search
       </button>
