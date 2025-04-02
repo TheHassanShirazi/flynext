@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 export async function POST(request) {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     // Extract booking details from request body
-    const { flightId, hotelId, roomTypeId, checkInDate, checkOutDate, departureTime, arrivalTime, destination } = await request.json();
+    const { flightId, hotelId, roomTypeId, checkInDate, checkOutDate, departureTime, arrivalTime, destination, itineraryId } = await request.json();
     
     if (!token) {
         return NextResponse.json({ error: 'No token provided' }, { status: 401 });
@@ -69,7 +69,8 @@ export async function POST(request) {
                 departureTime: data.departureTime,
                 arrivalTime: data.arrivalTime,
                 price: data.price,
-                legs: flight.legs
+                legs: flight.legs,
+                itineraryId
             });
 
             await prisma.flight.create({
@@ -80,7 +81,8 @@ export async function POST(request) {
                     departureTime: data.departureTime,
                     arrivalTime: data.arrivalTime,
                     price: data.price,
-                    legs: flight.legs
+                    legs: flight.legs,
+                    itineraryId
                 }
             })
         }
