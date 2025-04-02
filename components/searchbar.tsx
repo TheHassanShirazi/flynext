@@ -8,6 +8,9 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+interface SearchBarProps {
+  onBeforeSearch?: (params: URLSearchParams) => void;
+}
 
 function TravelersSelector({ onSelect, onClose, currentValue }: {
   onSelect: (value: string) => void;
@@ -185,7 +188,7 @@ function Calendar({ onSelect, onClose, selectedDates }: {
 }
 
 
-export default function SearchBar() {
+export default function SearchBar(props: SearchBarProps) {
   const router = useRouter();
   const [searchType, setSearchType] = useState<"hotels" | "flights">("hotels");
   const [searchQuery, setSearchQuery] = useState("");
@@ -200,6 +203,14 @@ export default function SearchBar() {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
+      if (props.onBeforeSearch) {
+        const params = new URLSearchParams();
+        params.set('searchType', searchType);
+        params.set('searchQuery', searchQuery);
+        params.set('travelers', travelers);
+        params.set('dates', dates);
+        props.onBeforeSearch(params);
+      }
       router.push(`/search/${searchType}/city=${encodeURIComponent(searchQuery)}`);
     }
   };
