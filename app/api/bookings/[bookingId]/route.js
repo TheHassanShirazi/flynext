@@ -97,3 +97,47 @@ export async function PUT(request, { params }) {
         return NextResponse.json({ error: error.message }, { status: 401 });
     }
 }
+
+
+export async function DELETE(request, { params }) {
+    const token = request.headers.get('Authorization')?.split(' ')[1]; // Bearer token
+
+    if (!token) {
+        return NextResponse.json({ error: 'No token provided' }, { status: 401 });
+    }
+
+    try {
+        const decoded = verifyToken(token);
+
+        const { bookingId } = await params;
+
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.id },
+        });
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        const booking = await prisma.booking.findUnique({
+            where: { id: parseInt(bookingId) },
+        });
+
+        if (!booking) {
+            return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+        }
+
+        if (booking.userId !== decoded.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Delete the booking
+        await prisma.booking.delete({
+            where: { id: parseInt(bookingId) },
+        });
+
+        return NextResponse.json({ message: 'Booking successfully cancelled' }, { status: 200 });
+    } catch (error) {
+        return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+}
