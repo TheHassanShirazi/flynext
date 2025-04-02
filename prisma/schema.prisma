@@ -146,6 +146,7 @@ model Flight {
 
 model Itinerary {
   id            Int       @id @default(autoincrement())
+  name          String
   bookings      Booking[]
   flights       Flight[]
 }
