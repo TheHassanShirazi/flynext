@@ -146,9 +146,8 @@ model Flight {
 }
 
 model Itinerary {
-  id            Int       @id @default(autoincrement())
   userId        Int      
-  name          String
+  name          String    @id
 
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookings      Booking[]

@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 
 export async function GET(request, { params }) {
     const { roomTypeId } = await params;
-    console.log("fucking hell");
 
     try {
         const roomType = await prisma.roomType.findUnique({
