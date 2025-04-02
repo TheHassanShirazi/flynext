@@ -7,14 +7,8 @@ import { verifyToken } from "@/utils/auth";
 const prisma = new PrismaClient();
 
 export async function PUT(request, { params }) {
-    const token = request.headers.get('Authorization')?.split(' ')[1]; // Bearer token
-    
-    if (!token) {
-        return NextResponse.json({ error: 'No token provided' }, { status: 401 });
-    }
 
     try {
-        verifyToken(token);
 
         const { bookingId } = await params;
         
@@ -30,12 +24,15 @@ export async function PUT(request, { params }) {
             return NextResponse.json({ error: 'Booking already verified' }, { status: 400 });
         }
 
+        // MOVE THIS TO VERIFY FLIGHT
+        /*
         const flight = await fetch(`https://advanced-flights-system.replit.app/api/flights?origin=${booking.flightFrom}&destination=${booking.flightTo}&date=${booking.departureTime}`);
         const flightData = await flight.json();
 
         if (flightData.departureTime == booking.departureTime) {
             return NextResponse.json({ error: 'Flight delayed' }, { status: 400 });
         }
+            */
 
         await prisma.booking.update({
             where: { id: parseInt(bookingId) },

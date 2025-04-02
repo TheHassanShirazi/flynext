@@ -13,7 +13,7 @@ export async function POST(request, { params }) {
     }
 
     try {
-        const decoded = verifyToken(token);  
+        const decoded = verifyToken(token);
 
         const user = await prisma.user.findUnique({
             where: { id: parseInt(decoded.id) },
@@ -39,8 +39,6 @@ export async function POST(request, { params }) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        console.log(type, totalRooms, amenities, pricePerNight);
-
         const roomType = await prisma.roomType.create({
             data: {
                 hotelId: parseInt(hotelId),
@@ -52,8 +50,6 @@ export async function POST(request, { params }) {
                 bookings: {}
             }
         });
-
-        console.log(roomType);
 
         await prisma.hotel.update({
             where: { id: parseInt(hotelId) },
