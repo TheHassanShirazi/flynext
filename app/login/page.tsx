@@ -15,7 +15,7 @@ export default function LoginPage() {
         setError('');
 
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('http://localhost:3000/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -25,6 +25,8 @@ export default function LoginPage() {
 
             if (!response.ok) {
                 const data = await response.json();
+                localStorage.setItem('userId', data.userId);
+                localStorage.setItem('accessToken', data.accessToken);
                 throw new Error(data.error || 'Failed to login');
             }
 

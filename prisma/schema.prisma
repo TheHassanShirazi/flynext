@@ -23,7 +23,8 @@ model User {
   bookings              Booking[]
   notifications         Notification[]
   darkMode              String                @default("off")      // "on" for light mode, "off" for dark mode
-  hotels                Hotel[]           
+  hotels                Hotel[]
+  itinerary             Itinerary[]
 }
 
 model Hotel {
@@ -146,7 +147,10 @@ model Flight {
 
 model Itinerary {
   id            Int       @id @default(autoincrement())
+  userId        Int      
   name          String
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookings      Booking[]
   flights       Flight[]
 }
