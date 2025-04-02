@@ -14,10 +14,8 @@
     "@fontsource/roboto": "^5.2.5",
     "@mui/icons-material": "^7.0.1",
     "@mui/material": "^7.0.1",
-    "@mui/x-date-pickers-pro": "^7.28.2",
     "@prisma/client": "^6.5.0",
     "bcrypt": "^5.1.1",
-    "dayjs": "^1.11.13",
     "jsonwebtoken": "^9.0.2",
     "next": "^15.2.4",
     "prisma": "^6.5.0",
@@ -33,6 +31,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
+    "prisma": "^6.5.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
