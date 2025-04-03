@@ -43,3 +43,29 @@ export async function POST(request) {
         return NextResponse.json({ error }, { status: 401 });
     }
 }
+
+
+export async function GET(request) {
+    const token = request.headers.get('Authorization')?.split(' ')[1]; // Bearer token
+
+    if (!token) {
+        return NextResponse.json({ error: 'No token provided' }, { status: 401 });
+    }
+
+    try {
+        const decoded = verifyToken(token);
+
+        if (!decoded) {
+            return NextResponse.json({ error: 'Unauthorized. Maybe you need to log in?' }, { status: 401 });
+        }
+
+        const hotels = await prisma.hotel.findMany({
+            where: {
+                ownerId: decoded.id},
+        });
+
+        return NextResponse.json(hotels, {status: 200});
+    } catch (error) {
+        return NextResponse.json({ error }, { status: 401 });
+    }
+}

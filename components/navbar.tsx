@@ -28,7 +28,7 @@ export default function Navbar() {
                     <h1 className="text-2xl font-semibold text-blue-600">FlyNext</h1>
                     <div className="relative group">
                         <button className="text-gray-600 hover:text-blue-600 flex items-center">
-                            More travel <span className="ml-1">▼</span>
+                            Search <span className="ml-1">▼</span>
                         </button>
                         <div className="hidden group-hover:block absolute top-full left-0 bg-white shadow-lg rounded-lg p-2 w-48">
                             <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Flights</a>
@@ -50,7 +50,7 @@ export default function Navbar() {
                         </>
                     ) : (
                         <>
-                            <Link href="/list-property" className="text-gray-600 hover:text-blue-600">
+                            <Link href="/myhotels" className="text-gray-600 hover:text-blue-600">
                                 List your hotel
                             </Link>
                             <Link href="/itineraries" className="text-gray-600 hover:text-blue-600">

@@ -54,46 +54,75 @@ export default function Itineraries() {
     const hotelData = await hotelResponse.json();
     return hotelData;
   }
-
   function Hotel({ itinerary, index, handleCancelHotel }) {
     const [hotel, setHotel] = useState(null);
     const [roomType, setRoomType] = useState(null);
-
+  
     useEffect(() => {
       if (itinerary.bookings[index]) {
         const hotelId = itinerary.bookings[index].hotelId;
         const roomTypeId = itinerary.bookings[index].roomTypeId;
-
+  
         const fetchData = async () => {
           const fetchedHotel = await fetchHotelData(hotelId);
           const fetchedRoomType = await fetchRoomTypeData(hotelId, roomTypeId);
-
+  
           setHotel(fetchedHotel);
           setRoomType(fetchedRoomType);
         };
-
+  
         fetchData();
       }
     }, [itinerary, index]);
-
+  
     if (!hotel || !roomType) {
       return <p>Loading...</p>;
     }
-
+  
+    // Function to determine rating background color
+    const getRatingColor = (rating) => {
+      if (rating >= 4.5) return '#4caf50'; // Green for excellent
+      if (rating >= 3.5) return '#ff9800'; // Orange for good
+      return '#f44336'; // Red for poor
+    };
+  
     return (
-      <Box sx={{ display: 'flex', maxHeight: '20rem', flexDirection:'column' }}>
+      <Box sx={{ display: 'flex', maxHeight: '20rem', flexDirection: 'column' }}>
         <div className="flex-1">
           <h3 className="text-2xl font-bold text-gray-900 mb-2">{hotel.name}</h3>
           <p className="text-base text-gray-700 mb-2">{hotel.address}</p>
           <p className="text-base text-gray-600 mb-4">Price: ${roomType.pricePerNight} nightly</p>
+  
+          {/* Rating Element */}
+          <Box 
+            sx={{
+              backgroundColor: getRatingColor(hotel.rating),
+              padding: '5px 10px',
+              borderRadius: '4px',
+              display: 'inline-block',
+              color: 'white',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              marginTop: 2
+            }}
+          >
+            <Typography variant="body1">{`Rating: ${hotel.rating}`}</Typography>
+          </Box>
         </div>
+  
         <ThemeProvider theme={theme}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Button onClick={() => handleCancelHotel(itinerary.id)} color="primary" variant="contained" sx={{ marginBottom: '5rem' }}>
+            <Button
+              onClick={() => handleCancelHotel(itinerary.id)}
+              color="primary"
+              variant="contained"
+              sx={{ marginBottom: '5rem' }}
+            >
               Cancel Hotel Booking
             </Button>
           </Box>
         </ThemeProvider>
+  
         <div className="mt-4">
           {cancels.hotelBookings.includes(itinerary.id) && (
             <div className="text-red-500 font-semibold">
@@ -109,6 +138,7 @@ export default function Itineraries() {
       </Box>
     );
   }
+  
 
   const [itineraries, setItineraries] = useState(null);
   const [signedIn, setSignedIn] = useState(false);

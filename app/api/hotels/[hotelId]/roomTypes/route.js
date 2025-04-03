@@ -12,6 +12,8 @@ export async function POST(request, { params }) {
         return NextResponse.json({ error: 'No token provided' }, { status: 401 });
     }
 
+    console.log('adding roomType, ' + token);
+
     try {
         const decoded = verifyToken(token);
 
@@ -29,6 +31,7 @@ export async function POST(request, { params }) {
             return NextResponse.json({ error: 'Hotel not found' }, { status: 404 });
         }
 
+        console.log(hotel.ownerId, user.id);
         if (hotel.ownerId !== user.id) {
             return NextResponse.json({ error: 'Unauthorized - only the owner of this hotel has access' }, { status: 401 });
         }
@@ -62,6 +65,42 @@ export async function POST(request, { params }) {
             
         return NextResponse.json(roomType, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error }, { status: 401 });
+        return NextResponse.json({ error: error.message }, { status: 401 });
     }
 }
+
+export async function GET(request, { params }) {
+
+    try {
+
+        const { hotelId } = await params;  // Get hotelId from params
+
+        const hotel = await prisma.hotel.findUnique({
+            where: { id: parseInt(hotelId) },
+        });
+
+        if (!hotel) {
+            return NextResponse.json({ error: 'Hotel not found' }, { status: 404 });
+        }
+
+        if (hotel.ownerId !== user.id) {
+            return NextResponse.json({ error: 'Unauthorized - only the owner of this hotel has access' }, { status: 401 });
+        }
+
+        // Fetch all room types associated with the hotel
+        const roomTypes = await prisma.roomType.findMany({
+            where: { hotelId: parseInt(hotelId) },
+        });
+
+        if (roomTypes.length === 0) {
+            return NextResponse.json({ message: 'No room types available for this hotel.' }, { status: 200 });
+        }
+
+        return NextResponse.json(roomTypes, { status: 200 });
+
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: 'An error occurred while fetching room types.' }, { status: 500 });
+    }
+}
+
