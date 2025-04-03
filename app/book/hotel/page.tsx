@@ -145,21 +145,31 @@ export default function HotelBooking() {
 
 
     function isValidDate(dateString: string) {
-        // Regular expression to match the format DD-MM-YYYY
-        const regex = /^([0-2][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/;
+        // Regular expression to match the format YYYY-MM-DD
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
         
         // Test if the date matches the format
         if (!regex.test(dateString)) {
             return false;
         }
         
-        // Extract day, month, and year from the date string
-        const [day, month, year] = dateString.split('-').map(num => parseInt(num, 10));
+        // Extract year, month, and day from the date string
+        const [year, month, day] = dateString.split('-').map(num => parseInt(num, 10));
         
-        // Check for valid day and month ranges
-        const date = new Date(year, month - 1, day); // JavaScript months are 0-based
-        return date.getDate() === day && date.getMonth() === month - 1 && date.getFullYear() === year;
+        // Check for valid month range (1-12)
+        if (month < 1 || month > 12) {
+            return false;
+        }
+    
+        // Check for valid day range based on month and leap year rules
+        const daysInMonth = new Date(year, month, 0).getDate(); // Get the last day of the month
+        if (day < 1 || day > daysInMonth) {
+            return false;
+        }
+    
+        return true;
     }
+    
 
 
     const handleItineraryChange = (event: SelectChangeEvent) => {
@@ -230,7 +240,7 @@ export default function HotelBooking() {
             <Navbar />
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'ffffff', height: '100vh', width: '100vw', marginTop: '-5rem', marginBottom: '25rem' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'left', height: '50vh', width: '50vw', padding: '2rem', backgroundColor: 'ffffff' }}>
-                    <Typography variant="h4" sx={{ marginY: '3rem', color: '#011010', fontWeight: '500' }}>Make a booking</Typography>
+                    <Typography variant="h4" sx={{ marginY: '3rem', color: '#011010', fontWeight: '500' }}>Reserve rooms</Typography>
 
                     <Typography variant="h2" sx={{ marginY: '1rem', color: '#011010', fontWeight: '500' }}>
                         {hotel ? hotel.name : 'Loading hotel data...'}

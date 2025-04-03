@@ -97,7 +97,12 @@ export default function Itineraries() {
         <div className="mt-4">
           {cancels.hotelBookings.includes(itinerary.id) && (
             <div className="text-red-500 font-semibold">
-              This hotel booking has been cancelled.
+              This reservation has been cancelled.
+            </div>
+          )}
+          {cancels.flights.includes(itinerary.id) && (
+            <div className="text-red-500 font-semibold">
+              This flight has been cancelled.
             </div>
           )}
         </div>
@@ -187,7 +192,7 @@ export default function Itineraries() {
       {signedIn &&
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
-          <Typography variant="h2">My Itineraries</Typography>
+          <Typography variant="h2">My Bookings</Typography>
         </div>
 
         {/* Itinerary List */}
@@ -227,7 +232,7 @@ export default function Itineraries() {
                         color="error"
                         variant="outlined"
                       >
-                        Cancel Itinerary
+                        Cancel Booking
                       </Button>
 
                     </div>
@@ -236,7 +241,7 @@ export default function Itineraries() {
                   {/* Show Cancelled State */}
                   {cancels.itineraries.includes(itinerary.id) && (
                     <div className="mt-4 text-red-500 font-semibold">
-                      This itinerary has been cancelled.
+                      This booking has been cancelled.
                     </div>
                   )}
                 </div>
@@ -248,7 +253,7 @@ export default function Itineraries() {
       }
       {!signedIn &&
       <div className='flex items-center justify-center'>
-        <p className='text-black text-3xl m-5'>Please sign in to see your itineraries.</p>
+        <p className='text-black text-3xl m-5'>Please sign in to see your bookings.</p>
       </div>
       }
     </div>

@@ -94,6 +94,7 @@ model Booking {
   departureTime      DateTime?
   arrivalTime        DateTime?
   price              Float
+  numberOfSeats      Int
   verificationStatus String    // e.g., pending, verified
   paymentStatus      String    // e.g., pending, completed
   createdAt          DateTime  @default(now())

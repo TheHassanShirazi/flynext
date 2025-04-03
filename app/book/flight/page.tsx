@@ -14,10 +14,13 @@ export default function HotelBooking() {
     const flightTo = params.get('flightTo');
     const departureTime = params.get('departureTime');
     const arrivalTime = params.get('arrivalTime');
+    const seatsParam = params.get('seats');
 
     const [signedIn, setSignedIn] = useState(false);
     const [itineraries, setItineraries] = useState([]);
     const [itineraryId, setItineraryId] = useState('');
+
+    const [numberOfSeats, setNumberOfSeats] = useState(seatsParam);
 
     const [creditCardName, setCreditCardName] = useState('');
     const [creditCardNumber, setCreditCardNumber] = useState('');
@@ -117,8 +120,8 @@ export default function HotelBooking() {
 
         const formData = {
             flightId,
-            flightFrom: flightFrom,
-            flightTo: flightTo,
+            origin: flightFrom,
+            destination: flightTo,
             departureTime: departureTime,
             arrivalTime: arrivalTime,
             itineraryId
@@ -196,6 +199,10 @@ export default function HotelBooking() {
         setCheckOutDate(event.target.value);
     };
 
+    const handleNumberOfSeatsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNumberOfSeats(event.target.value);
+    }; 
+
 
     return (
         <div className="bg-white">
@@ -204,7 +211,7 @@ export default function HotelBooking() {
             { signedIn && (flightId && arrivalTime && departureTime && flightFrom && flightTo) &&
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'ffffff', height: '100vh', width: '100vw', marginTop: '-5rem', marginBottom: '25rem' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'left', height: '50vh', width: '50vw', padding: '2rem', backgroundColor: 'ffffff' }}>
-                    <Typography variant="h4" sx={{ marginY: '3rem', color: '#011010', fontWeight: '500' }}>Make a booking</Typography>
+                    <Typography variant="h4" sx={{ marginY: '3rem', color: '#011010', fontWeight: '500' }}>Book a flight</Typography>
 
                     <Typography variant="h3" sx={{ marginY: '1rem', color: '#011010', fontWeight: '500' }}>
                         Flight from {flightFrom} to {flightTo}
@@ -213,6 +220,16 @@ export default function HotelBooking() {
                     <Typography variant="h5" sx={{ marginY: '1rem', color: '#011010', fontWeight: '500' }}>
                         Departure at {departureTime} and Arrival at {arrivalTime}
                     </Typography>
+
+                    <TextField
+                        id="number-of-seats"
+                        label="numberOfSeats"
+                        variant="outlined"
+                        sx={{ marginY: '1rem', maxWidth: '20rem' }}
+                        value={numberOfSeats}
+                        disabled={booked}
+                        onChange={handleNumberOfSeatsChange}
+                    />
 
                     <FormControl sx={{ marginY: '1rem', maxWidth: '20rem' }}>
                         <InputLabel id="itinerary-label" sx={{ width: '15rem' }}>Itinerary</InputLabel>

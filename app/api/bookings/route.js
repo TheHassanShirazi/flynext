@@ -7,8 +7,7 @@ const prisma = new PrismaClient();
 export async function POST(request) {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     // Extract booking details from request body
-    const { flightId, hotelId, roomTypeId, checkInDate, checkOutDate, departureTime, arrivalTime, destination, itineraryId } = await request.json();
-    console.log("itinerary id given: " + itineraryId);
+    const { flightId, hotelId, roomTypeId, checkInDate, checkOutDate, departureTime, arrivalTime, origin, destination, itineraryId, numberOfSeats } = await request.json();
     
     if (!token) {
         return NextResponse.json({ error: 'No token provided' }, { status: 401 });
@@ -45,10 +44,11 @@ export async function POST(request) {
             
             return `${year}-${month}-${day}`;
           }
-       
+
+        
         if (flightId) {
             data.flightId = flightId;
-            const flights = await fetch(`https://advanced-flights-system.replit.app/api/flights?origin=${encodeURIComponent(user.location)}&destination=${encodeURIComponent(destination)}&date=${encodeURIComponent(convertToDateString(departureTime))}`,
+            const flights = await fetch(`https://advanced-flights-system.replit.app/api/flights?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&date=${encodeURIComponent(convertToDateString(departureTime))}`,
             {
                 method: "GET",
                 headers: {
@@ -56,8 +56,11 @@ export async function POST(request) {
                 },
             });
             const flightData = await flights.json();
+            console.log("Hey")
+            console.log(flightData);
             const flight = flightData.results.filter(f => f.flights.some(l => l.id === flightId))[0];
-            data.price = flight.flights[0].price;
+            
+            data.price = flight.flights[0].price * numberOfSeats;
             data.flightFrom = user.location;
             data.flightTo = flight.flights[flight.flights.length - 1].destination.city;
             data.departureTime = new Date(departureTime);
@@ -73,17 +76,26 @@ export async function POST(request) {
                 legs: flight.legs
             });
 
-            await prisma.flight.create({
-                data: {
-                    id: flight.flights[0].id,
-                    origin: data.flightFrom,
-                    destination: data.flightTo,
-                    departureTime: data.departureTime,
-                    arrivalTime: data.arrivalTime,
-                    price: data.price,
-                    legs: flight.legs
+            const flightExists = await prisma.flight.findMany({
+                where: {
+                    id: flight.flights[0].id
                 }
-            })
+            });
+
+            if (!flightExists) {
+
+                await prisma.flight.create({
+                    data: {
+                        id: flight.flights[0].id,
+                        origin: data.flightFrom,
+                        destination: data.flightTo,
+                        departureTime: data.departureTime,
+                        arrivalTime: data.arrivalTime,
+                        price: data.price,
+                        legs: flight.legs
+                    }
+                })
+            }
         }
         if (hotelId) {
             data.hotelId = parseInt(hotelId);
@@ -104,8 +116,8 @@ export async function POST(request) {
             });
             
             data.price = roomType.pricePerNight;
-            data.itineraryId = itineraryId;
         }
+        data.itineraryId = itineraryId;
 
         const response = await prisma.booking.create({
             data: data,
