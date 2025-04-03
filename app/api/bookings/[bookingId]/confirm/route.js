@@ -1,8 +1,7 @@
-// verify the booking with id bookingId by making sure the flight is on schedule (using AFS). if so, change verificationStatus to 'verified'
+// verify the booking with id bookingId by making sure the flight is on schedule (using AFS). if so, change paymentStatus to 'verified'
 
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { verifyToken } from "@/utils/auth";
 
 const prisma = new PrismaClient();
 
@@ -20,8 +19,8 @@ export async function PUT(request, { params }) {
             return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
         }
 
-        if (booking.verificationStatus === 'verified') {
-            return NextResponse.json({ error: 'Booking already verified' }, { status: 400 });
+        if (booking.paymentStatus === 'paid') {
+            return NextResponse.json({ error: 'Booking already paid for' }, { status: 200 });
         }
 
         // MOVE THIS TO VERIFY FLIGHT
@@ -37,7 +36,7 @@ export async function PUT(request, { params }) {
         await prisma.booking.update({
             where: { id: parseInt(bookingId) },
             data: {
-                verificationStatus: 'verified',
+                paymentStatus: 'verified',
             }
         });
 

@@ -74,10 +74,6 @@ export default function HotelBooking() {
         }
     };
 
-    const [isPageLoaded, setIsPageLoaded] = useState(false); // Track page load state
-    const [formChanged, setFormChanged] = useState(false); // Track form changes
-
-
     const handleSubmit = async () => {
 
         if (booked) {
@@ -88,6 +84,9 @@ export default function HotelBooking() {
 
             return;
         }
+        
+        setBooked(true);
+        
         const formData = {
             hotelId,
             roomTypeId,
@@ -124,7 +123,7 @@ export default function HotelBooking() {
     const handleConfirm = async () => {
 
         try {
-            const response = await fetch(`http://localhost:3000/api/bookings/${prevBookingId}`, {
+            const response = await fetch(`http://localhost:3000/api/bookings/${prevBookingId}/confirm`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -136,6 +135,7 @@ export default function HotelBooking() {
                 const bookingData = await response.json();
                 console.log(bookingData);
                 setPrevBookingId(bookingData.id);
+                router.push('/bookings');
             } else {
                 console.error('Form submission failed.');
             }
@@ -165,7 +165,6 @@ export default function HotelBooking() {
 
     const handleItineraryChange = (event: SelectChangeEvent) => {
         setItineraryId(event.target.value as string);
-        setFormChanged(true); // Mark the form as changed
         if (isValidDate(event.target.value)) {
             setCheckInDateError(false);
         } else {
@@ -175,7 +174,6 @@ export default function HotelBooking() {
 
     const handleCheckInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setCheckInDate(event.target.value);
-        setFormChanged(true); // Mark the form as changed
         if (isValidDate(event.target.value)) {
             setCheckOutDateError(false);
         } else {
@@ -185,7 +183,6 @@ export default function HotelBooking() {
 
     const handleCheckOutChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setCheckOutDate(event.target.value);
-        setFormChanged(true); // Mark the form as changed
     };
 
     // Fetch hotel and roomType data once hotelId or roomTypeId changes
@@ -228,13 +225,6 @@ export default function HotelBooking() {
 
         fetchData();
     }, [hotelId, roomTypeId]);
-
-    // Mark the page as loaded after the initial fetch is done
-    useEffect(() => {
-        if (hotel && roomType && itineraries.length > 0) {
-            setIsPageLoaded(true); // Set to true after fetching data
-        }
-    }, [hotel, roomType, itineraries]);
 
     return (
         <div className="bg-white">
@@ -290,7 +280,6 @@ export default function HotelBooking() {
                     <Button
                         variant="contained"
                         sx={{ marginTop: '1rem', maxWidth: '20rem' }}
-                        disabled={booked}
                         onClick={handleSubmit}
                     >
                         {booked ? 'Return to booking' : 'Proceed to payment'}
