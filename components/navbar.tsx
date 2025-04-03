@@ -6,10 +6,34 @@ import Button from "@/components/button"; // Default import
 
 export default function Navbar() {
     const [firstName, setFirstName] = useState<string | null>(null);
+    const [ownsHotels, setOwnsHotels] = useState<boolean>(false); // State to track if user owns any hotels
 
     useEffect(() => {
+        // Get the first name from localStorage
         const storedFirstName = localStorage.getItem("firstName");
         setFirstName(storedFirstName);
+
+        // Check if the user owns any hotels
+        const checkUserHotels = async () => {
+            const accessToken = localStorage.getItem("accessToken");
+            if (accessToken) {
+                try {
+                    const response = await fetch("http://localhost:3000/api/hotels", {
+                        method: "GET",
+                        headers: {
+                            "Authorization": `Bearer ${accessToken}`,
+                        },
+                    });
+                    const hotels = await response.json();
+                    // If the response contains hotels, set ownsHotels to true
+                    setOwnsHotels(hotels.length > 0);
+                } catch (error) {
+                    console.error("Error checking hotels:", error);
+                }
+            }
+        };
+
+        checkUserHotels();
     }, []);
 
     const handleLogout = () => {
@@ -25,7 +49,13 @@ export default function Navbar() {
         <nav className="w-full bg-white shadow-sm p-4 fixed top-0 left-0 right-0 z-50">
             <div className="max-w-7xl mx-auto flex justify-between items-center">
                 <div className="flex items-center space-x-8">
-                    <h1 className="text-2xl font-semibold text-blue-600">FlyNext</h1>
+                    {/* "FlyNext" wrapped in a Link to go to the homepage */}
+                    <Link href="/" passHref>
+                        <h1 className="text-2xl font-semibold text-blue-600 cursor-pointer">
+                            FlyNext
+                        </h1>
+                    </Link>
+
                     <div className="relative group">
                         <button className="text-gray-600 hover:text-blue-600 flex items-center">
                             Search <span className="ml-1">▼</span>
@@ -40,6 +70,9 @@ export default function Navbar() {
                 <div className="flex items-center space-x-6">
                     {firstName ? (
                         <>
+                            <Link href="/myhotels" className="text-gray-600 hover:text-blue-600">
+                                {ownsHotels ? 'Your hotels' : 'List your hotel'}
+                            </Link>
                             <span className="text-gray-600">Welcome, {firstName}!</span>
                             <Button className="!py-2" onClick={() => window.location.href = '/edit-profile'}>
                                 Edit Profile
@@ -49,10 +82,7 @@ export default function Navbar() {
                             </Button>
                         </>
                     ) : (
-                        <>
-                            <Link href="/myhotels" className="text-gray-600 hover:text-blue-600">
-                                List your hotel
-                            </Link>
+                        <>                            
                             <Link href="/itineraries" className="text-gray-600 hover:text-blue-600">
                                 My trips
                             </Link>
