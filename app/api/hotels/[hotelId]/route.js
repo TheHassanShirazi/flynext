@@ -48,26 +48,26 @@ export async function PUT(request, { params }) {
             return NextResponse.json({ error: 'Unauthorized - only the owner of this hotel has access' }, { status: 401 });
         }
 
-        const { name, address, location, starRating } = await request.json();
+        const { name, address, city, starRating } = await request.json();
 
-        if (name === undefined && address === undefined && location === undefined && starRating === undefined && logoId === undefined) {
+        if (name === undefined && address === undefined && city === undefined && starRating === undefined && logoId === undefined) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        data = {};
+        let data = {};
 
         if (name) data.name = name;
         if (address) data.address = address;
-        if (location) data.location = location;
+        if (city) data.location = city;
         if (starRating) data.starRating = parseInt(starRating);
-
+        
         const updatedHotel = await prisma.hotel.update({
             where: { id: parseInt(hotelId) },
             data: data
         });
-
+        
         return NextResponse.json(updatedHotel, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error }, { status: 401 });
+        return NextResponse.json({ error: error.message }, { status: 401 });
     }
 }

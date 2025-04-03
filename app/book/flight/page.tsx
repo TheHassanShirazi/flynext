@@ -39,7 +39,6 @@ export default function HotelBooking() {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
     
-    
     // Fetch hotel and roomType data once hotelId or roomTypeId changes
     useEffect(() => {
         if (!flightId) return; // Avoid making requests if IDs are missing
