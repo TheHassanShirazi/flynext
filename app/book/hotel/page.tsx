@@ -5,6 +5,7 @@ import { Box, InputLabel, Select, TextField, Typography, SelectChangeEvent, Menu
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
+import { json } from "stream/consumers";
 
 export default function HotelBooking() {
     const router = useRouter();
@@ -34,6 +35,10 @@ export default function HotelBooking() {
 
     const [booked, setBooked] = useState(false);
     const [prevBookingId, setPrevBookingId] = useState(null);
+
+    // New state variables for creating a new booking name
+    const [newBookingName, setNewBookingName] = useState('');
+    const [showNewBookingField, setShowNewBookingField] = useState(false);
 
     const handleCreditCardNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setCreditCardName(event.target.value);
@@ -74,18 +79,16 @@ export default function HotelBooking() {
     };
 
     const handleSubmit = async () => {
-
         if (booked) {
             setBooked(false);
             await fetch(`http://localhost:3000/api/bookings/${prevBookingId}`, {
                 method: 'DELETE'
             });
-
             return;
         }
-        
+
         setBooked(true);
-        
+
         const formData = {
             hotelId,
             roomTypeId,
@@ -95,7 +98,6 @@ export default function HotelBooking() {
         };
 
         try {
-            
             const accessToken = localStorage.getItem('accessToken');
             const response = await fetch('http://localhost:3000/api/bookings', {
                 method: 'POST',
@@ -120,7 +122,6 @@ export default function HotelBooking() {
     };
 
     const handleConfirm = async () => {
-
         try {
             const response = await fetch(`http://localhost:3000/api/bookings/${prevBookingId}/confirm`, {
                 method: 'PUT',
@@ -143,43 +144,81 @@ export default function HotelBooking() {
         }
     };
 
+    // Handle the new booking name
+    const handleNewBookingNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewBookingName(event.target.value);
+    };
 
-    function isValidDate(dateString: string) {
-        // Regular expression to match the format YYYY-MM-DD
-        const regex = /^\d{4}-\d{2}-\d{2}$/;
-        
-        // Test if the date matches the format
-        if (!regex.test(dateString)) {
-            return false;
+    const handleAddNewBooking = async () => {
+        if (newBookingName.trim() === '') {
+            return; // Don't proceed if the name is empty
         }
-        
-        // Extract year, month, and day from the date string
-        const [year, month, day] = dateString.split('-').map(num => parseInt(num, 10));
-        
-        // Check for valid month range (1-12)
-        if (month < 1 || month > 12) {
-            return false;
-        }
-    
-        // Check for valid day range based on month and leap year rules
-        const daysInMonth = new Date(year, month, 0).getDate(); // Get the last day of the month
-        if (day < 1 || day > daysInMonth) {
-            return false;
-        }
-    
-        return true;
-    }
-    
 
+        // Send POST request to create the new booking
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await fetch('http://localhost:3000/api/itineraries', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'lol ' + accessToken
+                },
+                body: JSON.stringify({ name: newBookingName })
+            });
 
-    const handleItineraryChange = (event: SelectChangeEvent) => {
-        setItineraryId(event.target.value as string);
-        if (isValidDate(event.target.value)) {
-            setCheckInDateError(false);
-        } else {
-            setCheckInDateError(true);
+            if (response.status === 200) {
+                const itinerary = await response.json();
+                console.log('New booking created successfully');
+                console.log(itineraries);
+                setShowNewBookingField(false); // Hide the input field and button after submission
+                setItineraries(itineraries => [...itineraries, itinerary]);
+            } else {
+                console.log(await response.json())
+                console.error('Failed to create new booking');
+            }
+        } catch (error) {
+            console.error('Error creating new booking:', error);
         }
     };
+
+    useEffect(() => {
+        if (!hotelId || !roomTypeId) return;
+        const fetchData = async () => {
+            const hotelResponse = await fetch(`http://localhost:3000/api/hotels/${hotelId}`);
+            try {
+                const hotelData = await hotelResponse.json();
+                setHotel(hotelData);
+            } catch (error) {
+                console.log(error);
+            }
+
+            const roomTypeResponse = await fetch(`http://localhost:3000/api/hotels/${hotelId}/roomTypes/${roomTypeId}`);
+            try {
+                const roomTypeData = await roomTypeResponse.json();
+                setRoomType(roomTypeData);
+            } catch (error) {
+                console.log(error);
+            }
+
+            const accessToken = await localStorage.getItem('accessToken');
+            const itinerariesResponse = await fetch("http://localhost:3000/api/itineraries", {
+                headers: {
+                    'Authorization': ("lol " + accessToken) || ''
+                }
+            });
+            try {
+                const itinerariesData = await itinerariesResponse.json();
+                setItineraries(itinerariesData);
+                if (itinerariesData.length > 0) {
+                    setItineraryId(itinerariesData[0].id);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData();
+    }, [hotelId, roomTypeId, itineraries]);
 
     const handleCheckInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setCheckInDate(event.target.value);
@@ -198,7 +237,7 @@ export default function HotelBooking() {
     useEffect(() => {
         if (!hotelId || !roomTypeId) return; // Avoid making requests if IDs are missing
         const fetchData = async () => {
-            const hotelResponse = await fetch(`http://localhost:3000/api/hotels/${hotelId}`);
+            const hotelResponse = await fetch('http://localhost:3000/api/hotels/${hotelId}');
             try {
                 const hotelData = await hotelResponse.json(); // Parse the JSON response
                 setHotel(hotelData);
@@ -206,27 +245,10 @@ export default function HotelBooking() {
                 console.log(error);
             }
 
-            const roomTypeResponse = await fetch(`http://localhost:3000/api/hotels/${hotelId}/roomTypes/${roomTypeId}`);
+            const roomTypeResponse = await fetch('http://localhost:3000/api/hotels/${hotelId}/roomTypes/${roomTypeId}');
             try {
                 const roomTypeData = await roomTypeResponse.json(); // Parse the JSON response
                 setRoomType(roomTypeData);
-            } catch (error) {
-                console.log(error);
-            }
-
-            const accessToken = await localStorage.getItem('accessToken');
-            const itinerariesResponse = await fetch("http://localhost:3000/api/itineraries", {
-                headers: {
-                    'Authorization': ("lol " + accessToken) || ''
-                }
-            });
-            try {
-                const itinerariesData = await itinerariesResponse.json(); // Parse the JSON response
-                console.log(itinerariesData);
-                setItineraries(itinerariesData);
-                if (itinerariesData.length > 0) {
-                    setItineraryId(itinerariesData[0].id); // Set default itineraryId
-                }
             } catch (error) {
                 console.log(error);
             }
@@ -234,6 +256,39 @@ export default function HotelBooking() {
 
         fetchData();
     }, [hotelId, roomTypeId]);
+
+    useEffect(() => {
+        
+        const fetchItineraries = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+        const itinerariesResponse = await fetch("http://localhost:3000/api/itineraries", {
+            headers: {
+                'Authorization': ("lol " + accessToken) || ''
+            }
+        });
+        try {
+            const itinerariesData = await itinerariesResponse.json(); // Parse the JSON response
+            console.log(itinerariesData);
+            setItineraries(itinerariesData);
+            if (itinerariesData.length > 0) {
+                setItineraryId(itinerariesData[0].id); // Set default itineraryId
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        };
+        fetchItineraries();
+        
+    }, []);
+
+    const handleItineraryChange = (event: SelectChangeEvent) => {
+        setItineraryId(event.target.value as string);
+        if (isValidDate(event.target.value)) {
+            setCheckInDateError(false);
+        } else {
+            setCheckInDateError(true);
+        }
+    };
 
     return (
         <div className="bg-white">
@@ -286,6 +341,36 @@ export default function HotelBooking() {
                         </Select>
                     </FormControl>
 
+                    {/* New booking field */}
+                    <Button
+                        variant="outlined"
+                        sx={{ marginTop: '1rem', maxWidth: '20rem' }}
+                        onClick={() => setShowNewBookingField(true)}
+                    >
+                        Add New Booking
+                    </Button>
+
+                    {showNewBookingField && (
+                        <Box sx={{ marginTop: '1rem', maxWidth: '20rem' }}>
+                            <TextField
+                                id="new-booking-name"
+                                label="New Booking Name"
+                                variant="outlined"
+                                value={newBookingName}
+                                onChange={handleNewBookingNameChange}
+                                fullWidth
+                            />
+                            <Button
+                                variant="contained"
+                                sx={{ marginTop: '1rem' }}
+                                onClick={handleAddNewBooking}
+                            >
+                                Submit New Booking
+                            </Button>
+                        </Box>
+                    )}
+
+                    
                     <Button
                         variant="contained"
                         sx={{ marginTop: '1rem', maxWidth: '20rem' }}
