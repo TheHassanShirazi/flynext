@@ -1,5 +1,3 @@
-// verify the booking with id bookingId by making sure the flight is on schedule (using AFS). if so, change paymentStatus to 'verified'
-
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 

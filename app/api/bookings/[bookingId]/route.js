@@ -104,17 +104,11 @@ export async function DELETE(request, { params }) {
 
         const { bookingId } = await params;
 
-        const booking = await prisma.booking.findUnique({
-            where: { id: parseInt(bookingId) },
-        });
-
-        if (!booking) {
-            return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
-        }
-
         // Delete the booking
-        await prisma.booking.delete({
-            where: { id: parseInt(bookingId) },
+        await prisma.booking.deleteMany({
+            where: {
+                id: parseInt(bookingId)
+            },
         });
 
         return NextResponse.json({ message: 'Booking successfully cancelled' }, { status: 200 });

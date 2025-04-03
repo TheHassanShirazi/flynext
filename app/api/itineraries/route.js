@@ -6,6 +6,8 @@ const prisma = new PrismaClient();
 
 export async function GET(request) {
 
+    console.log("fetching itineraries");
+
     const token = request.headers.get('Authorization')?.split(' ')[1]; // Bearer token
 
     if (!token) {
@@ -17,7 +19,10 @@ export async function GET(request) {
 
         const itineraries = await prisma.itinerary.findMany({
             where: {
-                userId: decoded.id
+                userId: parseInt(decoded.id)
+            },
+            include: {
+                bookings: true
             }
         });
         if (!itineraries) {
