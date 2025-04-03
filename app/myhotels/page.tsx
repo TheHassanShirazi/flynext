@@ -29,9 +29,12 @@ export default function Hotels() {
   
   // State to manage the list of hotels and room types
   const [hotels, setHotels] = useState([]);
-  
+
   // States to manage room type form visibility
   const [roomTypeVisible, setRoomTypeVisible] = useState(null); // Show/hide for each hotel
+
+  const [editHotelVisible, setEditHotelVisible] = useState(false); // To toggle edit form visibility
+    const [currentHotel, setCurrentHotel] = useState(null); // To store the hotel data being edited
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -55,6 +58,52 @@ export default function Hotels() {
     
     fetchHotels();
   }, []);
+
+  const handleEditClick = (hotel) => {
+    setCurrentHotel(hotel);
+    setHotelName(hotel.name);
+    setHotelAddress(hotel.address);
+    setHotelCity(hotel.city);
+    setHotelRating(hotel.starRating);
+    setEditHotelVisible(true); // Show the edit form
+  };
+
+  const handleEditFormSubmit = async (e) => {
+    e.preventDefault();
+    const updatedHotel = {
+      name: hotelName,
+      address: hotelAddress,
+      city: hotelCity,
+      starRating: hotelRating,
+    };
+  
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) return;
+  
+    try {
+      const response = await fetch(`http://localhost:3000/api/hotels/${currentHotel.id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedHotel),
+      });
+      console.log(await response.json());
+  
+      // Update hotel in the state to reflect the changes without needing to refetch
+      setHotels((prevHotels) =>
+        prevHotels.map((hotel) =>
+          hotel.id === currentHotel.id ? { ...hotel, ...updatedHotel } : hotel
+        )
+      );
+      setEditHotelVisible(false); // Hide the form after submitting
+    } catch (error) {
+      console.error('Error updating hotel:', error);
+    }
+  };
+  
+  
 
   // Function to handle form submission for new hotel
   const handleFormSubmit = async (e) => {
@@ -218,13 +267,87 @@ export default function Hotels() {
                       <Typography variant="h5" sx={{ fontWeight: '500' }}>{hotel.name}</Typography>
                       <Typography variant="body2">{hotel.address}, {hotel.city} - Rating: {hotel.starRating}</Typography>
                       <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-                        <Button variant="outlined" color="secondary">
-                          Edit Availability
-                        </Button>
-                        <Button variant="outlined" color="secondary">
-                          Edit Info
-                        </Button>
+                        <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                onClick={() => handleEditClick(hotel)} // Open edit form for the specific hotel
+                            >
+                                Edit Info
+                            </Button>
+                            <Button variant="outlined" color="secondary">
+                                Edit Availability
+                            </Button>
+                        </Box>
+
                       </Box>
+
+                      {editHotelVisible && currentHotel && (
+  <Box
+    sx={{
+      mt: 3,
+      p: 4,
+      backgroundColor: '#f9f9f9',
+      borderRadius: '8px',
+      boxShadow: 3
+    }}
+  >
+    <Typography variant="h5" sx={{ mb: 2 }}>Edit Hotel</Typography>
+    <form onSubmit={handleEditFormSubmit}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TextField
+            label="Hotel Name"
+            fullWidth
+            value={hotelName}
+            onChange={(e) => setHotelName(e.target.value)}
+            required
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="Address"
+            fullWidth
+            value={hotelAddress}
+            onChange={(e) => setHotelAddress(e.target.value)}
+            required
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="City"
+            fullWidth
+            value={hotelCity}
+            onChange={(e) => setHotelCity(e.target.value)}
+            required
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="Rating"
+            fullWidth
+            value={hotelRating}
+            onChange={(e) => setHotelRating(e.target.value)}
+            required
+            type="number"
+            inputProps={{ min: 1, max: 5 }}
+          />
+        </Grid>
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            type="submit"
+            fullWidth
+          >
+            Save Changes
+          </Button>
+        </Grid>
+      </Grid>
+    </form>
+  </Box>
+)}
+
 
                       {/* Add Room Type button */}
                       <Box sx={{ mt: 3 }}>
