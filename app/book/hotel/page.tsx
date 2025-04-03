@@ -5,7 +5,6 @@ import { Box, InputLabel, Select, TextField, Typography, SelectChangeEvent, Menu
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import debounce from 'lodash.debounce'; // Import debounce function
 
 export default function HotelBooking() {
     const router = useRouter();
@@ -261,7 +260,7 @@ export default function HotelBooking() {
                     />
 
                     <FormControl sx={{ marginY: '1rem', maxWidth: '20rem' }}>
-                        <InputLabel id="itinerary-label" sx={{ width: '15rem' }}>Itinerary</InputLabel>
+                        <InputLabel id="itinerary-label" sx={{ width: '15rem' }}>Booking</InputLabel>
                         <Select
                             labelId="itinerary-label"
                             id="itinerary-select"
