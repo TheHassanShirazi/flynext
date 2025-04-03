@@ -12,6 +12,13 @@ services:
       timeout: 5s
       retries: 10
 
+  afs:
+    build:
+      context: ./afs
+    image: afs-image
+    ports:
+      - 4000:4000
+
   flynext:
     build:
       context: .
