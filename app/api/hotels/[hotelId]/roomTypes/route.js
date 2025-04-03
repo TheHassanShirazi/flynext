@@ -5,6 +5,8 @@ import { verifyToken } from "@/utils/auth";
 const prisma = new PrismaClient();
 
 export async function POST(request, { params }) {
+    const { hotelId } = await params;
+    console.log(hotelId);
 
     const token = request.headers.get('Authorization')?.split(' ')[1]; // Bearer token
 
@@ -12,16 +14,12 @@ export async function POST(request, { params }) {
         return NextResponse.json({ error: 'No token provided' }, { status: 401 });
     }
 
-    console.log('adding roomType, ' + token);
-
     try {
         const decoded = verifyToken(token);
 
         const user = await prisma.user.findUnique({
             where: { id: parseInt(decoded.id) },
         });
-
-        const { hotelId } = await params;
 
         const hotel = await prisma.hotel.findUnique({
             where: { id: parseInt(hotelId) },
@@ -31,7 +29,6 @@ export async function POST(request, { params }) {
             return NextResponse.json({ error: 'Hotel not found' }, { status: 404 });
         }
 
-        console.log(hotel.ownerId, user.id);
         if (hotel.ownerId !== user.id) {
             return NextResponse.json({ error: 'Unauthorized - only the owner of this hotel has access' }, { status: 401 });
         }
@@ -83,10 +80,6 @@ export async function GET(request, { params }) {
             return NextResponse.json({ error: 'Hotel not found' }, { status: 404 });
         }
 
-        if (hotel.ownerId !== user.id) {
-            return NextResponse.json({ error: 'Unauthorized - only the owner of this hotel has access' }, { status: 401 });
-        }
-
         // Fetch all room types associated with the hotel
         const roomTypes = await prisma.roomType.findMany({
             where: { hotelId: parseInt(hotelId) },
@@ -95,7 +88,7 @@ export async function GET(request, { params }) {
         if (roomTypes.length === 0) {
             return NextResponse.json({ message: 'No room types available for this hotel.' }, { status: 200 });
         }
-
+        console.log(roomTypes);
         return NextResponse.json(roomTypes, { status: 200 });
 
     } catch (error) {

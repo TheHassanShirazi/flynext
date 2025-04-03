@@ -215,7 +215,7 @@ export default function Hotels() {
                 {hotels.length > 0 ? (
                   hotels.map((hotel) => (
                     <Box key={hotel.id} sx={{ mb: 4, p: 3, backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: 3 }}>
-                      <Typography variant="h6">{hotel.name}</Typography>
+                      <Typography variant="h5" sx={{ fontWeight: '500' }}>{hotel.name}</Typography>
                       <Typography variant="body2">{hotel.address}, {hotel.city} - Rating: {hotel.starRating}</Typography>
                       <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
                         <Button variant="outlined" color="secondary">
@@ -258,7 +258,7 @@ export default function Hotels() {
 
                       {/* List of Room Types for the Hotel */}
                       <Box sx={{ mt: 2 }}>
-                        <Typography variant="subtitle1">Room Types</Typography>
+                        <Typography variant="h6">Room Types</Typography>
                         <RoomTypes hotelId={hotel.id} />
                       </Box>
                     </Box>
@@ -286,7 +286,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
       const roomTypeData = {
         type: roomTypeType,
         totalRooms: roomTypeTotalRooms,
-        amenities: roomTypeAmenities.split(','), // Assuming amenities is a comma-separated string
+        amenities: roomTypeAmenities,
         pricePerNight: roomTypePrice,
       };
       handleAddRoomType(hotelId, roomTypeData);
@@ -316,7 +316,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              label="Amenities (comma separated)"
+              label="Amenities"
               fullWidth
               value={roomTypeAmenities}
               onChange={(e) => setRoomTypeAmenities(e.target.value)}
@@ -372,11 +372,11 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
       <Box sx={{ mt: 2 }}>
         {roomTypes.length > 0 ? (
           roomTypes.map((roomType) => (
-            <Box key={roomType.id} sx={{ mb: 2 }}>
-              <Typography variant="body1">Type: {roomType.type}</Typography>
+            <Box key={roomType.id} sx={{ mb: 2, ml: 4 }}>
+              <Typography variant="body1" sx={{ fontWeight:'500' }}>Type: {roomType.type}</Typography>
               <Typography variant="body2">Total Rooms: {roomType.totalRooms}</Typography>
               <Typography variant="body2">Price per night: ${roomType.pricePerNight}</Typography>
-              <Typography variant="body2">Amenities: {roomType.amenities.join(', ')}</Typography>
+              <Typography variant="body2">Amenities: {roomType.amenities}</Typography>
             </Box>
           ))
         ) : (
