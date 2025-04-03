@@ -239,142 +239,171 @@ export default function SearchBar(props: SearchBarProps) {
 
   return (
     <Box
-      sx={{
-        backgroundColor: "white",
-        padding: "1.5rem",
-        borderRadius: "12px",
-        boxShadow: 3,
-        maxWidth: "900px",
-        margin: "auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-      }}
+  sx={{
+    backgroundColor: "white",
+    padding: "1.5rem",
+    borderRadius: "12px",
+    boxShadow: 3,
+    maxWidth: "900px",
+    margin: "auto",
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
+  }}
+>
+  {/* Buttons for Hotels / Flights */}
+  <Box sx={{ display: "flex", gap: 2 }}>
+    <Button
+      variant={searchType === "hotels" ? "contained" : "outlined"}
+      sx={{ flex: 1, borderRadius: "25px", fontSize: "1rem", textTransform: "none" }}
+      onClick={() => setSearchType("hotels")}
     >
-      {/* Buttons for Hotels / Flights */}
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Button
-          variant={searchType === "hotels" ? "contained" : "outlined"}
-          sx={{ flex: 1, borderRadius: "25px", fontSize: "1rem", textTransform: "none" }}
-          onClick={() => setSearchType("hotels")}
-        >
-          Hotels
-        </Button>
-        <Button
-          variant={searchType === "flights" ? "contained" : "outlined"}
-          sx={{ flex: 1, borderRadius: "25px", fontSize: "1rem", textTransform: "none" }}
-          onClick={() => setSearchType("flights")}
-        >
-          Flights
-        </Button>
-      </Box>
+      Hotels
+    </Button>
+    <Button
+      variant={searchType === "flights" ? "contained" : "outlined"}
+      sx={{ flex: 1, borderRadius: "25px", fontSize: "1rem", textTransform: "none" }}
+      onClick={() => setSearchType("flights")}
+    >
+      Flights
+    </Button>
+  </Box>
 
-      {/* Search Inputs */}
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "3fr 2fr 2fr 1fr" }, gap: 2 }}>
-        {/* Destination Input */}
-        <Box sx={{ position: "relative" }}>
-          <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
-            Destination
-          </Typography>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder={searchType === "hotels" ? "Where are you going?" : "Flying to"}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{
-              startAdornment: <LocationOnIcon sx={{ color: "gray", marginRight: 1 }} />,
-            }}
-          />
-        </Box>
-
-        {/* Date Picker */}
-        <Box sx={{ position: "relative" }} ref={calendarRef}>
-          <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
-            Dates
-          </Typography>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Select dates"
-            value={dates}
-            onClick={() => setShowCalendar(true)}
-            InputProps={{
-              startAdornment: <DateRangeIcon sx={{ color: "gray", marginRight: 1 }} />,
-              readOnly: true,
-            }}
-          />
-          {showCalendar && (
-            <Box
-              sx={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                zIndex: 10,
-                width: "100%",
-                backgroundColor: "white",
-                borderRadius: "8px",
-                boxShadow: 3,
-                mt: 1,
-              }}
-            >
-              <Calendar onSelect={handleDateSelect} onClose={() => setShowCalendar(false)} selectedDates={selectedDates} />
-            </Box>
-          )}
-        </Box>
-
-        {/* Travelers Input */}
-        <Box sx={{ position: "relative" }} ref={travelersRef}>
-          <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
-            Travelers & Rooms
-          </Typography>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Select travelers"
-            value={travelers}
-            onClick={() => setShowTravelers(true)}
-            InputProps={{
-              startAdornment: <PersonIcon sx={{ color: "gray", marginRight: 1 }} />,
-              readOnly: true,
-            }}
-          />
-          {showTravelers && (
-            <Box
-              sx={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                zIndex: 10,
-                width: "100%",
-                backgroundColor: "white",
-                borderRadius: "8px",
-                boxShadow: 3,
-                mt: 1,
-              }}
-            >
-              <TravelersSelector onSelect={setTravelers} onClose={() => setShowTravelers(false)} currentValue={travelers} />
-            </Box>
-          )}
-        </Box>
-
-        {/* Search Button */}
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            borderRadius: "12px",
-            height: "100%",
-            minWidth: "60px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onClick={handleSearch}
-        >
-          <SearchIcon sx={{ fontSize: "2rem" }} />
-        </Button>
-      </Box>
+  {/* Search Inputs */}
+  <Box sx={{ 
+      display: "grid", 
+      gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, 
+      gap: 2, 
+      width: "100%", 
+      maxWidth: "40rem", 
+      margin: "auto" 
+  }}>
+    <Box sx={{ maxWidth: '20rem', maxHeight: '10rem', display: 'flex', flexDirection: 'row' }}>
+    {/* Origin Input */}
+    <Box sx={{ display: "flex", flexDirection: "column", marginRight: '1rem' }}>
+      <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
+      {searchType === "hotels" ? "City" : "Origin"}
+      </Typography>
+      <TextField
+        fullWidth
+        variant="outlined"
+        placeholder={searchType === "hotels" ? "Where are you going?" : "Flying from"}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        sx={{
+          flex: 1
+        }}
+      />
     </Box>
+
+    {/* Destination Input */}
+    {searchType === "flights" && (
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
+          Destination
+        </Typography>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Flying to"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{
+            flex: 1
+          }}
+        />
+      </Box>
+    )}
+    </Box>
+
+    {/* Date Picker */}
+    <Box sx={{ position: "relative" }} ref={calendarRef}>
+      <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
+        Dates
+      </Typography>
+      <TextField
+        fullWidth
+        variant="outlined"
+        placeholder="Select dates"
+        value={dates}
+        onClick={() => setShowCalendar(true)}
+        InputProps={{
+          startAdornment: <DateRangeIcon sx={{ color: "gray", marginRight: 1 }} />,
+          readOnly: true,
+        }}
+      />
+      {showCalendar && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            zIndex: 10,
+            width: "100%",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: 3,
+            mt: 1,
+          }}
+        >
+          <Calendar onSelect={handleDateSelect} onClose={() => setShowCalendar(false)} selectedDates={selectedDates} />
+        </Box>
+      )}
+    </Box>
+
+    {/* Travelers Input */}
+    <Box sx={{ position: "relative" }} ref={travelersRef}>
+      <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
+        Travelers & Rooms
+      </Typography>
+      <TextField
+        fullWidth
+        variant="outlined"
+        placeholder="Select travelers"
+        value={travelers}
+        onClick={() => setShowTravelers(true)}
+        InputProps={{
+          startAdornment: <PersonIcon sx={{ color: "gray", marginRight: 1 }} />,
+          readOnly: true,
+        }}
+      />
+      {showTravelers && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            zIndex: 10,
+            width: "100%",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: 3,
+            mt: 1,
+          }}
+        >
+          <TravelersSelector onSelect={setTravelers} onClose={() => setShowTravelers(false)} currentValue={travelers} />
+        </Box>
+      )}
+    </Box>
+
+    {/* Search Button */}
+    <Button
+      variant="contained"
+      color="primary"
+      sx={{
+        borderRadius: "12px",
+        height: "100%",
+        minWidth: "60px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onClick={handleSearch}
+    >
+      <SearchIcon sx={{ fontSize: "2rem" }} />
+    </Button>
+  </Box>
+</Box>
+
   );
 }
