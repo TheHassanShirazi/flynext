@@ -68,10 +68,12 @@ export async function PUT(request, { params }) {
 
     const token = request.headers.get('Authorization')?.split(' ')[1]; // Bearer token
     
+    
     if (!token) {
         return NextResponse.json({ error: 'No token provided' }, { status: 401 });
     }
 
+    
     try {
         const decoded = verifyToken(token);  
 
@@ -79,8 +81,12 @@ export async function PUT(request, { params }) {
             where: { id: parseInt(decoded.id) },
         });
 
+        
+        
         const { hotelId } = await params;
+        
         const { roomTypeId, roomsToClear } = await request.json();
+        console.log(roomsToClear, roomTypeId);
 
         const hotel = await prisma.hotel.findUnique({
             where: { id: parseInt(hotelId) },
@@ -89,10 +95,12 @@ export async function PUT(request, { params }) {
             }
         });
 
+        
         if (!hotel) {
             return NextResponse.json({ error: 'Hotel not found' }, { status: 404 });
         }
 
+        
         if (hotel.ownerId !== user.id) {
             return NextResponse.json({ error: 'Unauthorized - only the owner of this hotel has access' }, { status: 401 });
         }
@@ -101,6 +109,7 @@ export async function PUT(request, { params }) {
             return NextResponse.json({ error: 'Invalid room type' }, { status: 400 });
         }        
 
+        
         if (!roomTypeId) {
             if (roomsToClear > hotel.roomTypes.reduce((acc, roomType) => acc + roomType.totalRooms)) {
                 return NextResponse.json({ error: "You can't clear that many rooms!" }, { status: 400 });
@@ -111,16 +120,16 @@ export async function PUT(request, { params }) {
                     id: parseInt(roomTypeId)
                 }
             });
-            console.log(roomType);
             if (roomsToClear > roomType.totalRooms) {
                 return NextResponse.json({ error: "You can't clear that many rooms!" }, { status: 400 });
             }
         }
 
         let deletedBookings = [];
+        
 
         for (let i = 0; i < roomsToClear; i++) {
-
+            
             let data = {
                 hotelId: parseInt(hotelId)
             };
@@ -128,13 +137,13 @@ export async function PUT(request, { params }) {
             if (roomTypeId) {
                 data.roomTypeId = roomTypeId;
             }
-
+            
             let bookingToDelete = await prisma.booking.findFirst({
                 where: data
             });
-
+            
             if (bookingToDelete) {
-
+                
                 let deletedBooking;
                 if (bookingToDelete.flightId) {
                     deletedBooking = await prisma.booking.update({
@@ -151,21 +160,24 @@ export async function PUT(request, { params }) {
                         where: { id: bookingToDelete.id }
                     });
                 }
-
+                
                 deletedBookings.push(deletedBooking);
-
+                
                 await prisma.notification.create({
                     data: {
                         message: `Your reservation for booking ${deletedBooking.id} has been cancelled by the hotel owner`,
                         userId: user.id,
                     }
                 })
+                
             }
         }
+        const numberOfReservationsCleared = deletedBookings.length;
 
-        return NextResponse.json({ deletedBookings }, { status: 200 });
+        return NextResponse.json({ numberOfReservationsCleared }, { status: 200 });
 
     } catch (error) {
+        console.log(error.message);
         return NextResponse.json({ error: error.message }, { status: 401 });
     }
 }

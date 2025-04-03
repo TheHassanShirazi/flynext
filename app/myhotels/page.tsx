@@ -11,7 +11,7 @@ const theme = createTheme({
       main: '#ff0800'
     },
     secondary: {
-      main: '#0077b6'
+      main: '#1338BE'
     }
   },
 });
@@ -185,7 +185,7 @@ export default function Hotels() {
               <Box sx={{ mb: 4 }}>
                 <Button
                   variant="contained"
-                  color="primary"
+                  color="secondary"
                   onClick={() => setFormVisible(!formVisible)}
                 >
                   {formVisible ? 'Cancel' : 'Add New Hotel'}
@@ -274,9 +274,6 @@ export default function Hotels() {
                                 onClick={() => handleEditClick(hotel)} // Open edit form for the specific hotel
                             >
                                 Edit Info
-                            </Button>
-                            <Button variant="outlined" color="secondary">
-                                Edit Availability
                             </Button>
                         </Box>
 
@@ -456,7 +453,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
               type="number"
             />
           </Grid>
-          <Grid item xs={12} sx={{ mt: 2 }}>
+          <Grid sx={{ mt: 2 }}>
             <Button
               variant="contained"
               color="secondary"
@@ -466,12 +463,15 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
               Add Room Type
             </Button>
           </Grid>
+          
         </Grid>
       </form>
     );
   };
   const RoomTypes = ({ hotelId }) => {
     const [roomTypes, setRoomTypes] = useState([]);
+    const [roomsToClear, setRoomsToClear] = useState(0);
+    const [editAvailability, setEditAvailability] = useState(false);
   
     useEffect(() => {
       const fetchRoomTypes = async () => {
@@ -490,7 +490,34 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
   
       fetchRoomTypes();
     }, [hotelId]);
-  
+
+    const handleEditAvailabilityField = () => {
+        setEditAvailability(!editAvailability);
+    }
+
+    const submitNewAvailability = async (roomType, e) => {
+          try {
+            
+            const availabilityData = {
+                'roomTypeId': roomType.id,
+                'roomsToClear': e
+              }
+              console.log(availabilityData);
+            const response = await fetch(`http://localhost:3000/api/hotels/${hotelId}/availability`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+              },
+              body: JSON.stringify(availabilityData)
+            });
+            const data = await response.json();
+            setRoomsToClear(data);
+          } catch (error) {
+            console.error('Error fetching room types:', error);
+          }
+        };
+
     return (
       <Box sx={{ mt: 2 }}>
         {roomTypes.length > 0 ? (
@@ -500,7 +527,27 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
               <Typography variant="body2">Total Rooms: {roomType.totalRooms}</Typography>
               <Typography variant="body2">Price per night: ${roomType.pricePerNight}</Typography>
               <Typography variant="body2">Amenities: {roomType.amenities}</Typography>
-            </Box>
+               
+                <Button variant="outlined" color="secondary" sx={{ marginY: '1.5rem' }} onClick={handleEditAvailabilityField}>
+                    Edit Availability
+                </Button>
+                {editAvailability &&
+                <>
+                <TextField
+                    label="# of rooms to clear"
+                    value={roomsToClear}
+                    onChange={(e) => setRoomsToClear(e.target.value)}
+                    required
+                    type="number"
+                    inputProps={{ min: 0, max: roomType.totalRooms }}
+                    sx={{ margin: '1rem' }}
+                    />
+                    <Button variant="outlined" color="secondary" sx={{ marginY: '1.5rem' }} onClick={(e) => submitNewAvailability(roomType, roomsToClear)}>
+                    Clear reservations
+                </Button>
+                </>
+                }
+                </Box>
           ))
         ) : (
           <Typography>No room types available for this hotel.</Typography>
