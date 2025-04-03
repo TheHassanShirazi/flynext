@@ -50,7 +50,10 @@ export default function LoginPage() {
             router.push('http://localhost:3000/'); // Redirect to dashboard or desired route
 
         } catch (err: any) {
-            setError(err.message || 'An unexpected error occurred.');
+            if (err.message) {
+                router.push('/signup');
+            }
+            setError('An unexpected error occurred.');
         }
     };
 

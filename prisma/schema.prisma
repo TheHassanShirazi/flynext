@@ -24,7 +24,7 @@ model User {
   notifications         Notification[]
   darkMode              String                @default("off")      // "on" for light mode, "off" for dark mode
   hotels                Hotel[]
-  itinerary             Itinerary[]
+  itineraries             Itinerary[]
 }
 
 model Hotel {
