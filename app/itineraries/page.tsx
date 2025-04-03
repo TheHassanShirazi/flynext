@@ -106,18 +106,13 @@ export default function Itineraries() {
   }
 
   const [itineraries, setItineraries] = useState(null);
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const accessToken = localStorage.getItem('accessToken');
-      if (!accessToken) {
-        return (
-          <Box>
-            <Navbar />
-            <Typography variant="h3">Please sign in to see your itineraries.</Typography>
-          </Box>
-        )
-      }
+      console.log(accessToken);
+      if (accessToken) setSignedIn(true);
       const itinerariesResponse = await fetch(`http://localhost:3000/api/itineraries`, {
         method: 'GET',
         headers: {
@@ -189,6 +184,7 @@ export default function Itineraries() {
         <div className="container mx-auto px-4"></div>
       </div>
 
+      {signedIn &&
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <Typography variant="h2">My Itineraries</Typography>
@@ -249,6 +245,12 @@ export default function Itineraries() {
           ))}
         </div>
       </div>
+      }
+      {!signedIn &&
+      <div className='flex items-center justify-center'>
+        <p className='text-black text-3xl m-5'>Please sign in to see your itineraries.</p>
+      </div>
+      }
     </div>
   );
 }

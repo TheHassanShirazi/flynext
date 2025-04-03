@@ -6,8 +6,6 @@ const prisma = new PrismaClient();
 
 export async function GET(request) {
 
-    console.log("fetching itineraries");
-
     const token = request.headers.get('Authorization')?.split(' ')[1]; // Bearer token
 
     if (!token) {
