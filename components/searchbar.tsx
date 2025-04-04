@@ -14,10 +14,22 @@ interface SearchBarProps {
 
 interface Flight {
   id: string;
-  origin: string;
-  destination: string;
-  date: string;
+  origin: {
+    code: string;
+    name: string;
+    city: string;
+    country: string;
+  };
+  destination: {
+    code: string;
+    name: string;
+    city: string;
+    country: string;
+  };
+  departureTime: string;
+  arrivalTime: string;
   price: number;
+  currency: string;
 }
 
 function TravelersSelector({ onSelect, onClose, currentValue }: {
@@ -232,7 +244,7 @@ export default function SearchBar(props: SearchBarProps) {
           }
 
           const data = await response.json();
-          setFlights(data.flights);
+          setFlights(data.flights.results.flatMap((leg) => leg.flights));
           setLoading(false);
         } catch (err) {
           setError("An unexpected error occurred.");
@@ -334,10 +346,10 @@ export default function SearchBar(props: SearchBarProps) {
           gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
           gap: 2,
           width: "100%",
-          maxWidth: "40rem",
+          maxWidth: "60rem", // Increased max width
           margin: "auto"
         }}>
-        <Box sx={{ maxWidth: '20rem', maxHeight: '10rem', display: 'flex', flexDirection: 'row' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
             {/* Origin Input */}
             <Box sx={{ display: "flex", flexDirection: "column", marginRight: '1rem', flex: 1 }}>
             <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
@@ -357,7 +369,7 @@ export default function SearchBar(props: SearchBarProps) {
 
             {/* Destination Input */}
             {searchType === "flights" && (
-            <Box sx={{ maxWidth: '20rem', maxHeight: '10rem', display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
               <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
               Destination
               </Typography>
@@ -373,7 +385,6 @@ export default function SearchBar(props: SearchBarProps) {
               />
             </Box>
             )}
-          )}
         </Box>
         {/* Date Picker */}
         <Box sx={{ position: "relative" }} ref={calendarRef}>
@@ -482,14 +493,19 @@ export default function SearchBar(props: SearchBarProps) {
 
       {flights.length > 0 && (
         <Box sx={{ marginTop: 2 }}>
-          <Typography variant="h6">Flights:</Typography>
-          <ul>
+          <Typography variant="h6" sx={{ color: 'black' }}>Flights:</Typography>
+          <List>
             {flights.map((flight) => (
-              <li key={flight.id}>
-                {flight.origin} to {flight.destination} on {flight.date}: ${flight.price}
-              </li>
+              <ListItem key={flight.id}>
+          <ListItemText
+            primaryTypographyProps={{ sx: { color: 'black' } }}
+            secondaryTypographyProps={{ sx: { color: 'black' } }}
+            primary={`${flight.origin.city} (${flight.origin.code}) to ${flight.destination.city} (${flight.destination.code})`}
+            secondary={`Departure: ${new Date(flight.departureTime).toLocaleString()}, Arrival: ${new Date(flight.arrivalTime).toLocaleString()}, Price: ${flight.price} ${flight.currency}`}
+          />
+              </ListItem>
             ))}
-          </ul>
+          </List>
         </Box>
       )}
     </Box>
