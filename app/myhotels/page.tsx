@@ -171,7 +171,7 @@ export default function Hotels() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 text-black">
       <Navbar />
       {signedIn &&
         <div className="min-h-screen pt-20 pb-8 bg-gray-50 shadow-sm mt-10">
@@ -487,7 +487,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('accessToken')}`
             }
-          });
+          }); 
           const data = await response.json();
           setRoomTypes(data);
         } catch (error) {
@@ -526,7 +526,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
         };
 
     return (
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{ mt: 2 , p: 2, backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: 3 }}>
         {roomTypes.length > 0 ? (
           roomTypes.map((roomType) => (
             <Box key={roomType.id} sx={{ mb: 2, ml: 4 }}>

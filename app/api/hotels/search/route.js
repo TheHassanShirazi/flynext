@@ -13,6 +13,10 @@ export async function GET(request) {
     const minPrice = parseInt(params.get('minPrice'));           // Minimum price
     const maxPrice = parseInt(params.get('maxPrice'));           // Maximum price
 
+    console.log('Check-in date:', checkInDate);
+    console.log('Check-out date:', checkOutDate);
+    console.log('City:', city);
+
     // Validate required fields are present
     if (checkInDate === undefined || checkOutDate === undefined || city === undefined) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -40,8 +44,11 @@ export async function GET(request) {
         where: hotelFilters,
         include: {
             roomTypes: true,
+            images: true
         }
     });
+
+    console.log('Hotels that match the search:', hotels);
 
     const availableHotels = [];
 
@@ -53,6 +60,9 @@ export async function GET(request) {
                 checkOutDate: { gte: checkInDate },
             }
         });
+
+        console.log('Bookings:', bookings);
+        console.log('At hotel:', hotel);
     
         let availableRoomTypes = hotel.roomTypes.filter(roomType => {
             const bookedRooms = bookings.filter(booking => booking.roomTypeId === roomType.id).length;
@@ -66,7 +76,10 @@ export async function GET(request) {
         }
 
         const justHotel = await prisma.hotel.findUnique({
-            where: { id: parseInt(hotel.id) }
+            where: { id: parseInt(hotel.id) },
+            include: {
+                images: true
+            }
         });
     
         if (availableRoomTypes.length > 0) {

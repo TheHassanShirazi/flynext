@@ -44,7 +44,7 @@ export default function HotelSearchPage() {
         setHotels(data); // Set fetched data to hotels
       } catch (error) {
         console.error('Error fetching hotels:', error);
-        setHotels([]); // In case of error, set hotels to an empty array
+        setHotels(null); // In case of error, set hotels to an empty array
       } finally {
         setLoading(false); // Set loading to false once done
       }
@@ -89,76 +89,81 @@ export default function HotelSearchPage() {
         {/* Loading Indicator */}
         {loading ? (
           <div className="flex justify-center items-center h-screen">Loading hotels...</div>
-        ) : hotels === null ? (
-          <div className="flex justify-center items-center h-screen text-gray-500">No hotels found.</div>
-        ) : (
-          <div className="grid gap-6">
-            {hotels.length > 0 ? (
-              hotels.map((hotel) => (
-                <div key={hotel.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="p-6">
-                    <div className="flex gap-6">
+        ) : hotels === null || hotels.length === 0 ? (
+          <div className="flex justify-center items-center h-screen text-gray-500">Hotels could not be searched.</div>
+        ) : hotels instanceof Object ? (
+              hotels.availableHotels.map((hotel, i) => (
+                <div key={i} className="grid gap-6">
+                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  <div key={i} className="p-6">
+                    <div key={i} className="flex gap-6">
                       {/* Hotel Image */}
-                      <div className="w-72 h-48 relative rounded-lg overflow-hidden">
+                      <div key={i} className="w-72 h-48 relative rounded-lg overflow-hidden">
+                        {hotel.images && (
                         <Image
+                          key={i}
                           src={`/images/${hotel.images[0]?.fileName || 'default-hotel'}.jpg`}
                           alt={hotel.name}
                           layout="fill"
                           objectFit="cover"
                         />
+                      
+                        )}
                       </div>
-
                       {/* Hotel Details */}
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
+                      <div key={i} className="flex-1">
+                        <div key={i} className="flex justify-between items-start">
+                          <div key={i}>
                             <h2
-                              onClick={() => router.push(`/hotels/${hotel.id}`)}
+                              key={i}
+                              onClick={() => router.push(`/hotels/${i}`)}
                               className="text-2xl font-bold text-gray-900 mb-2 cursor-pointer hover:text-blue-600"
                             >
                               {hotel.name}
                             </h2>
-                            <p className="text-base text-gray-700 mb-2 font-medium">{hotel.address}</p>
-                            <div className="flex items-center gap-3 mb-4">
-                              <span className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-base font-semibold">
+                            <p key={i} className="text-base text-gray-700 mb-2 font-medium">{hotel.address}</p>
+                            <div key={i} className="flex items-center gap-3 mb-4">
+                              <span key={i} className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-base font-semibold">
                                 {hotel.starRating}/10
                               </span>
                             </div>
                           </div>
 
                           {/* Price and CTA */}
-                          <div className="text-right">
-                            <p className="text-sm font-medium text-gray-500 mb-1">Starting from</p>
-                            <p className="text-3xl font-bold text-blue-600 mb-3">
+                          <div key={i} className="text-right">
+                            <p key={i} className="text-sm font-medium text-gray-500 mb-1">Starting from</p>
+                            <p key={i} className="text-3xl font-bold text-blue-600 mb-3">
                               ${Math.min(...hotel.roomTypes.map((room) => room.pricePerNight))}
                             </p>
                             <button
-                              onClick={() => toggleRoomList(hotel.id)}
+                              key={i}
+                              onClick={() => toggleRoomList(i)}
                               className="px-6 py-2.5 bg-blue-600 text-white text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                             >
-                              {expandedHotel === hotel.id ? 'Hide Rooms' : 'See Available Rooms'}
+                              {expandedHotel === i ? 'Hide Rooms' : 'See Available Rooms'}
                             </button>
                           </div>
                         </div>
 
                         {/* Room List */}
-                        {expandedHotel === hotel.id && (
-                          <div className="mt-6 border-t pt-6">
-                            <div className="space-y-4">
-                              {hotel.roomTypes.map((room) => (
+                        {expandedHotel === i && (
+                          <div key={i} className="mt-6 border-t pt-6">
+                            <div key={i} className="space-y-4">
+                              {hotel.roomTypes.map((room, j) => (
                                 <div
-                                  key={room.id}
+                                  key={j}
                                   className="flex justify-between items-center p-5 bg-gray-50 rounded-lg"
                                 >
-                                  <div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-1">{room.name}</h3>
-                                    <p className="text-base text-gray-600">{room.amenities}</p>
+                                  <div key={j}>
+                                    <h3 key={j} className="text-lg font-bold text-gray-900 mb-1">{room.name}</h3>
+                                    <p key={j} className="text-base text-gray-600">{room.amenities}</p>
                                   </div>
-                                  <div className="text-right">
-                                    <p className="text-2xl font-bold text-blue-600 mb-3">
+                                  <div key={j} className="text-right">
+                                    <p key={j} className="text-2xl font-bold text-blue-600 mb-3">
                                       ${room.pricePerNight}
                                     </p>
                                     <button
+                                      key={j}
                                       onClick={() => handleBookRoom(hotel.id, room.id)}
                                       className={`px-6 py-2.5 rounded-lg text-base font-semibold ${room.availableRooms ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'} transition-colors`}
                                       disabled={!room.availableRooms}
@@ -175,13 +180,12 @@ export default function HotelSearchPage() {
                     </div>
                   </div>
                 </div>
+                </div>
               ))
             ) : (
               <div className="text-center text-gray-500">No hotels available for the selected filters.</div>
             )}
           </div>
-        )}
       </div>
-    </div>
   );
 }
