@@ -182,7 +182,6 @@ export default function HotelBooking() {
 
     return (
         <div className="bg-white">
-            <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
             <Navbar />
 
             { signedIn && (flightId && arrivalTime && departureTime && flightFrom && flightTo) &&
@@ -298,7 +297,6 @@ export default function HotelBooking() {
             <p className='text-black text-3xl m-5'>Incomplete parameters.</p>
         </div>
         }
-        </Suspense>
         </div>
     );
 }

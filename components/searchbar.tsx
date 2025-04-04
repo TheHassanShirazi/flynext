@@ -252,23 +252,27 @@ export default function SearchBar(props: SearchBarProps) {
           setLoading(false);
         }
       } else if (searchType === 'hotels') {
-        if (props.onBeforeSearch) {
-          const params = new URLSearchParams();
-          params.set('searchType', searchType);
-          params.set('searchQuery', origin);
-          params.set('travelers', travelers);
-          params.set('dates', dates);
-          props.onBeforeSearch(params);
-        }
-        console.log("redirecting to hotels page with params: ", { origin, travelers, dates });
-        router.push(`/${searchType}/search?city=${encodeURIComponent(origin)}`);
+        console.log(origin);
+        router.push(`/${searchType}/search?city=${encodeURIComponent(origin)}&checkInDate=${encodeURIComponent(dates.split(' -')[0])}&checkOutDate=${encodeURIComponent(dates.split('- ')[1])}`);
       }
     }
   };
 
+  function formatDate(date: Date) {
+    // Get the year, month, and day
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0'); // Ensure two digits for day
+  
+    // Return the formatted date string
+    return `${year}-${month}-${day}`;
+  }  
+
   const handleDateSelect = (dates: { start: Date; end: Date }) => {
-    setSelectedDates(dates);
-    setDates(`${dates.start.toLocaleDateString()} - ${dates.end.toLocaleDateString()}`);
+    if (dates.start.getTime() !== dates.end.getTime()){
+      setSelectedDates(dates);
+      setDates(`${formatDate(dates.start)} - ${formatDate(dates.end)}`);
+    }
   };
 
   const handleDateSelectForFlight = (selectedDate: Date | null) => {

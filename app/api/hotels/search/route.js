@@ -77,6 +77,6 @@ export async function GET(request) {
         }
     }
     
-
+    console.log(availableHotels);
     return NextResponse.json({ availableHotels }, { status: 200 });
 }
