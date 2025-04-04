@@ -3,7 +3,7 @@
 import Navbar from "@/components/navbar"
 import { Box, InputLabel, Select, TextField, Typography, SelectChangeEvent, MenuItem, FormControl, Button } from "@mui/material";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 
 export default function HotelBooking() {
@@ -33,11 +33,6 @@ export default function HotelBooking() {
 
     const [booked, setBooked] = useState(false);
     const [prevBookingId, setPrevBookingId] = useState(null);
-
-    function getTimeFromDateTime(dateTime: string | Date): string {
-        const date = new Date(dateTime);
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
     
     // Fetch hotel and roomType data once hotelId or roomTypeId changes
     useEffect(() => {
@@ -178,24 +173,6 @@ export default function HotelBooking() {
 
     const handleItineraryChange = (event: SelectChangeEvent) => {
         setItineraryId(event.target.value as string);
-        if (isValidDate(event.target.value)) {
-            setCheckInDateError(false);
-        } else {
-            setCheckInDateError(true);
-        }
-    };
-
-    const handleCheckInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setCheckInDate(event.target.value);
-        if (isValidDate(event.target.value)) {
-            setCheckOutDateError(false);
-        } else {
-            setCheckOutDateError(true);
-        }
-    };
-
-    const handleCheckOutChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setCheckOutDate(event.target.value);
     };
 
     const handleNumberOfSeatsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,6 +182,7 @@ export default function HotelBooking() {
 
     return (
         <div className="bg-white">
+            <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
             <Navbar />
 
             { signedIn && (flightId && arrivalTime && departureTime && flightFrom && flightTo) &&
@@ -320,6 +298,7 @@ export default function HotelBooking() {
             <p className='text-black text-3xl m-5'>Incomplete parameters.</p>
         </div>
         }
+        </Suspense>
         </div>
     );
 }

@@ -5,7 +5,6 @@ import { Box, InputLabel, Select, TextField, Typography, SelectChangeEvent, Menu
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { json } from "stream/consumers";
 
 export default function HotelBooking() {
     const router = useRouter();
@@ -30,8 +29,6 @@ export default function HotelBooking() {
     const [numberError, setNumberError] = useState(true);
     const [expiryError, setExpiryError] = useState(true);
     const [cvcError, setCVCError] = useState(true);
-    const [checkInDateError, setCheckInDateError] = useState(true);
-    const [checkOutDateError, setCheckOutDateError] = useState(true);
 
     const [booked, setBooked] = useState(false);
     const [prevBookingId, setPrevBookingId] = useState(null);
@@ -222,11 +219,6 @@ export default function HotelBooking() {
 
     const handleCheckInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setCheckInDate(event.target.value);
-        if (isValidDate(event.target.value)) {
-            setCheckOutDateError(false);
-        } else {
-            setCheckOutDateError(true);
-        }
     };
 
     const handleCheckOutChange = (event: React.ChangeEvent<HTMLInputElement>) => {

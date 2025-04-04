@@ -64,8 +64,6 @@ const mockHotels = [
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const city = searchParams.get('city')?.toLowerCase();
-  const checkIn = searchParams.get('checkIn');
-  const checkOut = searchParams.get('checkOut');
   const minPrice = Number(searchParams.get('minPrice')) || 0;
   const maxPrice = Number(searchParams.get('maxPrice')) || Infinity;
   const starRating = searchParams.get('starRating')?.split(',').map(Number);

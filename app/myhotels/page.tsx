@@ -549,7 +549,10 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
                     inputProps={{ min: 0, max: roomType.totalRooms }}
                     sx={{ margin: '1rem' }}
                     />
-                    <Button variant="outlined" color="secondary" sx={{ marginY: '1.5rem' }} onClick={(e) => submitNewAvailability(roomType, roomsToClear)}>
+                    <Button variant="outlined" color="secondary" sx={{ marginY: '1.5rem' }} onClick={(e) => {
+                      console.log(e);
+                      submitNewAvailability(roomType, roomsToClear)}
+                    }>
                     Clear reservations
                 </Button>
                 </>
@@ -557,7 +560,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
                 </Box>
           ))
         ) : (
-          <Typography s>No room types available for this hotel.</Typography>
+          <Typography>No room types available for this hotel.</Typography>
         )}
       </Box>
     );

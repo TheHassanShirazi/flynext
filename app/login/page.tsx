@@ -49,7 +49,8 @@ export default function LoginPage() {
 
             router.push('http://localhost:3000/'); // Redirect to dashboard or desired route
 
-        } catch (err: any) {
+        } catch (err) {
+            console.error('Login error:', err);
             router.push('/signup');
         }
     };

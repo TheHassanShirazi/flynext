@@ -37,5 +37,6 @@ export async function GET(
 ) {
   // For now, return mock data
   // In a real application, you would fetch this from a database
+  console.log(request, params);
   return NextResponse.json(mockHotel);
 }

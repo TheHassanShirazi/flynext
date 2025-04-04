@@ -1,13 +1,11 @@
 'use client';
 
-import { Box, Button, TextField, Typography, IconButton, Slider, Rating } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { Box, Typography, Slider, Rating } from "@mui/material";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import PersonIcon from "@mui/icons-material/Person";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import SearchBar from "./searchbar";
+import { useState } from "react";
 
 function HotelSearchBar() {
   const router = useRouter();
@@ -16,7 +14,6 @@ function HotelSearchBar() {
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
 
   const handleSearch = (baseParams: URLSearchParams) => {
-    const searchPath = `/hotels/search?${baseParams.toString()}`;
     
     // Add our hotel-specific filters
     const finalParams = new URLSearchParams(baseParams);

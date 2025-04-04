@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { NextResponse } from 'next/server';
+import Image from 'next/image';
 
 interface Image {
     id: number;
@@ -62,7 +62,7 @@ export default function HotelDetailsPage() {
                 const data: Hotel = await response.json();
                 setHotel(data);
                 setLoading(false);
-            } catch (err: any) {
+            } catch (err) {
                 setError(err.message || 'Failed to fetch hotel details.');
                 setLoading(false);
             }
@@ -89,7 +89,7 @@ export default function HotelDetailsPage() {
 
             {hotel.logo && (
                 <div className="mb-4">
-                    <img src={hotel.logo.url} alt={`${hotel.name} Logo`} className="max-w-xs" />
+                    <Image src={hotel.logo.url} alt={`${hotel.name} Logo`} className="max-w-xs" />
                 </div>
             )}
 
@@ -101,7 +101,7 @@ export default function HotelDetailsPage() {
                     <h2 className="text-xl font-semibold mb-2">Images</h2>
                     <div className="flex flex-wrap gap-4">
                         {hotel.images.map((image) => (
-                            <img key={image.id} src={image.url} alt={`Hotel Image ${image.id}`} className="max-w-xs" />
+                            <Image key={image.id} src={image.url} alt={`Hotel Image ${image.id}`} className="max-w-xs" />
                         ))}
                     </div>
                 </div>

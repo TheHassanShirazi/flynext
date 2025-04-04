@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/navbar';
 import HotelSearchBar from '@/components/hotel-searchbar';
-import debounce from 'lodash.debounce';
 
 interface Hotel {
   id: string;
@@ -67,11 +66,14 @@ export default function HotelSearchPage() {
   const handleBookRoom = (hotelId: string, roomId: string) => {
     const checkIn = searchParams.get('checkIn') || '';
     const checkOut = searchParams.get('checkOut') || '';
-    router.push(`/book/hotel?hotelId=${hotelId}&roomId=${roomId}&checkIn=${checkIn}&checkOut=${checkOut}`);
+    console.log(`Booking room ${roomId} in hotel ${hotelId} from ${checkIn} to ${checkOut}`);
+    // Redirect to booking page with parameters
+    router.push(`/book/hotel?hotelId=${hotelId}&roomTypeId=${roomId}&checkIn=${checkIn}&checkOut=${checkOut}`);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
       <Navbar />
       <div className="pt-20 pb-8 bg-white shadow-sm">
         <div className="container mx-auto px-4">
@@ -188,6 +190,7 @@ export default function HotelSearchPage() {
           ))}
         </div>
       </div>
+      </Suspense>
     </div>
   );
 }

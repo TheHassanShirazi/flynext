@@ -1,12 +1,8 @@
-// flightSearchBar.tsx
-
 'use client';
 
-import { Box, Button, TextField, Typography, CircularProgress } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { Box, Typography, CircularProgress } from "@mui/material";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 interface Flight {
@@ -18,7 +14,6 @@ interface Flight {
 }
 
 function FlightSearchBar() {
-  const router = useRouter();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [date, setDate] = useState<Date | null>(null);
@@ -49,6 +44,7 @@ function FlightSearchBar() {
         setLoading(false);
 
       } catch (err) {
+        console.error("Error fetching flights: ", err);
         setError("An unexpected error occurred.");
         setLoading(false);
       }

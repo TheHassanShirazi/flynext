@@ -71,7 +71,7 @@ export default function SignupPage() {
             }
 
             router.push('/');
-        } catch (err: any) {
+        } catch (err) {
             console.error("Client side error", err); //log client side errors.
             setError(err.message || 'An unexpected error occurred.');
         }

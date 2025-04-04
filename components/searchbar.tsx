@@ -1,10 +1,9 @@
 "use client";
 
-import { Box, Button, TextField, Typography, IconButton, CircularProgress, Autocomplete, List, ListItem, ListItemText } from "@mui/material";
+import { Box, Button, TextField, Typography, CircularProgress, Autocomplete, List, ListItem, ListItemText } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import PersonIcon from "@mui/icons-material/Person";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -39,6 +38,7 @@ function TravelersSelector({ onSelect, onClose, currentValue }: {
 }) {
   const [adults, setAdults] = useState(2);
   const [rooms, setRooms] = useState(1);
+  console.log(currentValue);
 
   const handleChange = (type: 'adults' | 'rooms', operation: 'add' | 'subtract') => {
     if (type === 'adults') {
@@ -247,6 +247,7 @@ export default function SearchBar(props: SearchBarProps) {
           setFlights(data.flights.results.flatMap((leg) => leg.flights));
           setLoading(false);
         } catch (err) {
+          console.error("Error fetching flights: ", err);
           setError("An unexpected error occurred.");
           setLoading(false);
         }

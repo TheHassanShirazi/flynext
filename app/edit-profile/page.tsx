@@ -47,7 +47,7 @@ export default function EditProfilePage() {
         setLastName(data.user.lastName);
         setPhoneNumber(data.user.phoneNumber);
         setEmail(data.user.email);
-      } catch (err: any) {
+      } catch (err) {
         setError(err.message || 'An error occurred fetching profile.');
       }
     };
@@ -83,7 +83,7 @@ export default function EditProfilePage() {
       }
 
       router.push('http://localhost:3000'); // Redirect to dashboard after update
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'An error occurred updating profile.');
     }
   };

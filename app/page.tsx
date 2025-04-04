@@ -1,20 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 import SearchBar from '@/components/searchbar';
 import Navbar from '@/components/navbar';
-
-function Button({ children, className, onClick }: { children: React.ReactNode; className?: string; onClick?: () => void }) {
-  return (
-    <button 
-      onClick={onClick}
-      className={`text-white px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors duration-300 ${className}`}
-    >
-      {children}
-    </button>
-  );
-}
 
 
 function Footer() {
