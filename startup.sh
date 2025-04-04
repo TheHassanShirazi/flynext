@@ -1,3 +1,3 @@
 #!/bin/bash
 
-npx prisma generate;npx prisma migrate deploy;npm run build;npm start
+npx prisma generate;npx prisma migrate deploy;node ./populateDB.js;npm run build;npm start
