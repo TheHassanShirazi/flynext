@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/navbar';
+import Image from 'next/image';
 
 interface UserProfile {
   firstName: string;
@@ -20,6 +21,8 @@ export default function EditProfilePage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -47,7 +50,10 @@ export default function EditProfilePage() {
         setLastName(data.user.lastName);
         setPhoneNumber(data.user.phoneNumber);
         setEmail(data.user.email);
-      } catch (err) {
+        if (data.user.profilePic) {
+          setProfilePicPreview(`/uploads/${data.user.profilePic.fileName}`);
+        }
+      } catch (err: any) {
         setError(err.message || 'An error occurred fetching profile.');
       }
     };
@@ -83,8 +89,55 @@ export default function EditProfilePage() {
       }
 
       router.push('http://localhost:3000'); // Redirect to dashboard after update
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || 'An error occurred updating profile.');
+    }
+  };
+
+  const handleProfilePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+
+    const file = e.target.files[0];
+    setProfilePicture(file);
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setProfilePicPreview(previewUrl);
+
+    // Upload the profile picture
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/profile-picture', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to upload profile picture');
+      }
+
+      const data = await response.json();
+      if (data.profilePic?.fileName) {
+        setProfilePicPreview(`/uploads/${data.profilePic.fileName}`);
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred uploading profile picture.');
+      // Reset preview if upload failed
+      setProfilePicPreview(user?.profilePic ? `/uploads/${user.profilePic}` : null);
     }
   };
 
@@ -100,6 +153,34 @@ export default function EditProfilePage() {
           <h1 className="text-2xl font-bold mb-6 text-center">Edit Profile</h1>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <form onSubmit={handleUpdateProfile}>
+            <div className="mb-6 flex flex-col items-center">
+              <div className="relative w-32 h-32 mb-4 rounded-full overflow-hidden">
+                {profilePicPreview ? (
+                  <Image 
+                    src={profilePicPreview}
+                    alt="Profile"
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <label htmlFor="profile-picture" className="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mb-6">
+                Upload Photo
+              </label>
+              <input
+                type="file"
+                id="profile-picture"
+                accept="image/*"
+                onChange={handleProfilePictureChange}
+                className="hidden"
+              />
+            </div>
             <div className="mb-4">
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
                 First Name
