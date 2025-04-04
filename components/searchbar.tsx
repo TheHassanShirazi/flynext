@@ -7,9 +7,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-interface SearchBarProps {
-  onBeforeSearch?: (params: URLSearchParams) => void;
-}
 
 interface Flight {
   id: string;
@@ -206,7 +203,7 @@ function Calendar({ onSelect, onClose, selectedDates }: {
   );
 }
 
-export default function SearchBar(props: SearchBarProps) {
+export default function SearchBar() {
   const router = useRouter();
   const [searchType, setSearchType] = useState<"hotels" | "flights">("hotels");
   const [origin, setOrigin] = useState("");

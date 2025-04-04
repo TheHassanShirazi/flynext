@@ -135,7 +135,7 @@ export default function Navbar() {
                                 {ownsHotels ? 'Your hotels' : 'List your hotel'}
                             </Link>
                             
-                            <div className="relative">
+                            <div className="relative background-black shadow-sm rounded-lg p-2 flex items-center">
                                 <button onClick={toggleDropdown}>
                                     {unreadNotifications.length === 0 ? (
                                         <NotificationsIcon />
@@ -149,7 +149,7 @@ export default function Navbar() {
                                     <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg p-4 w-64 max-h-60 overflow-y-auto">
                                         <h3 className="font-semibold text-gray-700">Unread Notifications</h3>
                                         <ul className="space-y-2 mt-2">
-                                            {unreadNotifications.length === 0 ? (
+                                            {!unreadNotifications ? (
                                                 <li>No new notifications</li>
                                             ) : (
                                                 unreadNotifications.map((notification, index) => (
