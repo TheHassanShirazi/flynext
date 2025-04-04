@@ -7,19 +7,24 @@ import Navbar from '@/components/navbar';
 import HotelSearchBar from '@/components/hotel-searchbar';
 
 interface Hotel {
-  id: string;
+  id: number;
+  ownerId: number;
   name: string;
-  description: string;
   address: string;
-  images: { fileName: string }[];
-  rating: number;
-  reviews: number;
+  city: string;
+  images: {
+    id: number;
+    fileName: string;
+    hotelId: number;
+    roomTypeId: number;
+  }[];
+  starRating: number;
   roomTypes: {
     id: string;
     name: string;
-    description: string;
-    price: number;
-    available: boolean;
+    amenities: string;
+    pricePerNight: number;
+    availableRooms: boolean;
   }[];
 }
 
@@ -39,6 +44,8 @@ export default function HotelSearchPage() {
         const rating = searchParams.get('rating');
         const minPrice = searchParams.get('minPrice');
         const maxPrice = searchParams.get('maxPrice');
+        const checkInDate = searchParams.get('checkInDate') || '';
+        const checkOutDate = searchParams.get('checkOutDate') || '';
 
         // Build the API URL with filters
         const params = new URLSearchParams();
@@ -48,7 +55,7 @@ export default function HotelSearchPage() {
         if (maxPrice) params.set('maxPrice', maxPrice);
 
         // This will be replaced with actual API endpoint
-        const response = await fetch(`/api/hotels/search?${params.toString()}`);
+        const response = await fetch(`http://localhost:3000/api/hotels/search?${params.toString()}`);
         const data = await response.json();
         setHotels(data);
       } catch (error) {
@@ -68,7 +75,7 @@ export default function HotelSearchPage() {
     const checkOut = searchParams.get('checkOut') || '';
     console.log(`Booking room ${roomId} in hotel ${hotelId} from ${checkIn} to ${checkOut}`);
     // Redirect to booking page with parameters
-    router.push(`/book/hotel?hotelId=${hotelId}&roomTypeId=${roomId}&checkIn=${checkIn}&checkOut=${checkOut}`);
+    router.push(`/book/hotel?hotelId=${hotelId}&roomTypeId=${roomId}&checkInDate=${checkIn}&checkOutDate=${checkOut}`);
   };
 
   return (

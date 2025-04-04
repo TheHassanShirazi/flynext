@@ -20,10 +20,10 @@ export default function HomePage() {
       <main className="flex-grow flex flex-col items-center px-6 py-20 mt-16">
         <div className="max-w-4xl text-center mb-8">
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">
-            Find your next stay
+            Flynext
           </h1>
           <p className="text-xl text-gray-600">
-            Search deals on hotels, homes, and much more...
+            To get you wherever you want to go.
           </p>
         </div>
         <div className="mt-15">

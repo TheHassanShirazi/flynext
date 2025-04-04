@@ -228,8 +228,8 @@ export default function SearchBar(props: SearchBarProps) {
   const [autocompleteOptionsDestination, setAutocompleteOptionsDestination] = useState<string[]>([]);
 
   const handleSearch = async () => {
-    if (origin.trim() && destination.trim()) {
-      if (searchType === "flights" && dateForFlightSearch) {
+    if (origin.trim()) {
+      if (searchType === "flights" && dateForFlightSearch && destination.trim()) {
         setLoading(true);
         setError(null);
         const dateStr = dateForFlightSearch.toISOString().split('T')[0];
@@ -260,7 +260,8 @@ export default function SearchBar(props: SearchBarProps) {
           params.set('dates', dates);
           props.onBeforeSearch(params);
         }
-        router.push(`/search/${searchType}/city=${encodeURIComponent(origin)}`);
+        console.log("redirecting to hotels page with params: ", { origin, travelers, dates });
+        router.push(`/${searchType}/search?city=${encodeURIComponent(origin)}`);
       }
     }
   };
