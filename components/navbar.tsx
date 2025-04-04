@@ -5,12 +5,16 @@ import Link from "next/link";
 import Button from "@/components/button"; // Default import
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { useTheme } from "@/context/ThemeContext";
 
 export default function Navbar() {
     const [firstName, setFirstName] = useState<string | null>(null);
     const [ownsHotels, setOwnsHotels] = useState<boolean>(false); // State to track if user owns any hotels
     const [unreadNotifications, setUnreadNotifications] = useState([]); // State for notifications
     const [isDropdownVisible, setIsDropdownVisible] = useState(false); // State to control dropdown visibility
+    const { theme, toggleTheme } = useTheme();
 
     useEffect(() => {
         // Get the first name from localStorage
@@ -129,6 +133,13 @@ export default function Navbar() {
                 </div>
 
                 <div className="flex items-center space-x-6">
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        aria-label="Toggle theme"
+                    >
+                        {theme === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+                    </button>
                     {firstName ? (
                         <>
                             <Link href="/myhotels" className="text-gray-600 hover:text-blue-600">

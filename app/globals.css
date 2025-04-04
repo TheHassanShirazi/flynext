@@ -2,25 +2,104 @@
 
 :root {
   --background: #ffffff;
+  --background-secondary: #f9fafb;
   --foreground: #171717;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --nav-bg: #ffffff;
+  --nav-text: #4b5563;
+  --nav-hover: #2563eb;
+  --nav-shadow: rgba(0, 0, 0, 0.05);
+  --border-color: #e5e7eb;
+  --footer-bg: #f3f4f6;
+  --calendar-bg: #ffffff;
+  --calendar-text: #111827;
+  --calendar-hover: #93c5fd;
+  --calendar-selected: #1e3a8a;
+  --calendar-range: #3b82f6;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.dark {
+  --background: #0a0a0a;
+  --background-secondary: #1a1a1a;
+  --foreground: #ededed;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --nav-bg: #1a1a1a;
+  --nav-text: #9ca3af;
+  --nav-hover: #3b82f6;
+  --nav-shadow: rgba(0, 0, 0, 0.1);
+  --border-color: #374151;
+  --footer-bg: #111827;
+  --calendar-bg: #1a1a1a;
+  --calendar-text: #f3f4f6;
+  --calendar-hover: #2563eb;
+  --calendar-selected: #3b82f6;
+  --calendar-range: #1d4ed8;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+nav {
+  background-color: var(--nav-bg) !important;
+  color: var(--nav-text);
+  box-shadow: 0 1px 3px var(--nav-shadow);
+}
+
+nav a, nav button {
+  color: var(--nav-text) !important;
+}
+
+nav a:hover, nav button:hover {
+  color: var(--nav-hover) !important;
+}
+
+/* Override Tailwind classes for dark mode */
+.bg-gray-50, .bg-gray-100 {
+  background-color: var(--background-secondary) !important;
+}
+
+.text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+.text-gray-600, .text-gray-800 {
+  color: var(--text-secondary) !important;
+}
+
+.border-gray-200 {
+  border-color: var(--border-color) !important;
+}
+
+/* Calendar styles */
+.bg-white {
+  background-color: var(--calendar-bg) !important;
+}
+
+.text-gray-900, .text-gray-800 {
+  color: var(--calendar-text) !important;
+}
+
+.hover\:bg-gray-100:hover {
+  background-color: var(--background-secondary) !important;
+}
+
+.hover\:bg-gray-500:hover {
+  background-color: var(--calendar-hover) !important;
+}
+
+.bg-blue-900 {
+  background-color: var(--calendar-selected) !important;
+}
+
+.bg-blue-500 {
+  background-color: var(--calendar-range) !important;
+}
+
+.hover\:bg-blue-300:hover {
+  background-color: var(--calendar-hover) !important;
 }
