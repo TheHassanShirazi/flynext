@@ -15,6 +15,11 @@ export async function GET(request) {
     try {
         const decoded = verifyToken(token);
 
+        if (!decoded) {
+            console.log("hey");
+            return NextResponse.json({ error: error.message }, { status: 401 });
+        }
+
         // Fetch all unread notifications for the authenticated user
         const notifications = await prisma.notification.findMany({
             where: {

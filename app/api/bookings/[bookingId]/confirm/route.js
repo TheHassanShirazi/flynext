@@ -41,6 +41,7 @@ export async function PUT(request, { params }) {
         return NextResponse.json({ booking }, { status: 200 });
     }
     catch (error) {
-        return NextResponse.json({ error }, { status: 401 });
+        console.log(error);
+        return NextResponse.json({ error: error.message }, { status: 401 });
     }
 }

@@ -57,13 +57,14 @@ export default function Navbar() {
                     console.error('Error calling API:', error);
                 });
         }
+        if (!firstName) return; // Don't call the API if the user is not logged in
 
         // Call the API every 3 seconds (3000 milliseconds)
         const intervalId = setInterval(callApi, 3000);
 
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(intervalId);
-    }, []); // Empty dependency array ensures this runs once when the component mounts
+    }, [firstName]); // Empty dependency array ensures this runs once when the component mounts
 
     const handleLogout = () => {
         localStorage.removeItem("firstName");

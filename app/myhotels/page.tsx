@@ -171,7 +171,7 @@ export default function Hotels() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       {signedIn &&
         <div className="min-h-screen pt-20 pb-8 bg-gray-50 shadow-sm mt-10">
@@ -280,70 +280,70 @@ export default function Hotels() {
                       </Box>
 
                       {editHotelVisible && currentHotel && (
-  <Box
-    sx={{
-      mt: 3,
-      p: 4,
-      backgroundColor: '#f9f9f9',
-      borderRadius: '8px',
-      boxShadow: 3
-    }}
-  >
-    <Typography variant="h5" sx={{ mb: 2 }}>Edit Hotel</Typography>
-    <form onSubmit={handleEditFormSubmit}>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <TextField
-            label="Hotel Name"
-            fullWidth
-            value={hotelName}
-            onChange={(e) => setHotelName(e.target.value)}
-            required
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Address"
-            fullWidth
-            value={hotelAddress}
-            onChange={(e) => setHotelAddress(e.target.value)}
-            required
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="City"
-            fullWidth
-            value={hotelCity}
-            onChange={(e) => setHotelCity(e.target.value)}
-            required
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Rating"
-            fullWidth
-            value={hotelRating}
-            onChange={(e) => setHotelRating(e.target.value)}
-            required
-            type="number"
-            inputProps={{ min: 1, max: 5 }}
-          />
-        </Grid>
-        <Grid item xs={12} sx={{ mt: 2 }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            type="submit"
-            fullWidth
-          >
-            Save Changes
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
-  </Box>
-)}
+                        <Box
+                          sx={{
+                            mt: 3,
+                            p: 4,
+                            backgroundColor: '#f9f9f9',
+                            borderRadius: '8px',
+                            boxShadow: 3
+                          }}
+                        >
+                          <Typography variant="h5" sx={{ mb: 2 }}>Edit Hotel</Typography>
+                          <form onSubmit={handleEditFormSubmit}>
+                            <Grid container spacing={2}>
+                              <Grid>
+                                <TextField
+                                  label="Hotel Name"
+                                  fullWidth
+                                  value={hotelName}
+                                  onChange={(e) => setHotelName(e.target.value)}
+                                  required
+                                />
+                              </Grid>
+                              <Grid>
+                                <TextField
+                                  label="Address"
+                                  fullWidth
+                                  value={hotelAddress}
+                                  onChange={(e) => setHotelAddress(e.target.value)}
+                                  required
+                                />
+                              </Grid>
+                              <Grid>
+                                <TextField
+                                  label="City"
+                                  fullWidth
+                                  value={hotelCity}
+                                  onChange={(e) => setHotelCity(e.target.value)}
+                                  required
+                                />
+                              </Grid>
+                              <Grid>
+                                <TextField
+                                  label="Rating"
+                                  fullWidth
+                                  value={hotelRating}
+                                  onChange={(e) => setHotelRating(e.target.value)}
+                                  required
+                                  type="number"
+                                  inputProps={{ min: 1, max: 5 }}
+                                />
+                              </Grid>
+                              <Grid sx={{ mt: 2 }}>
+                                <Button
+                                  variant="contained"
+                                  color="secondary"
+                                  type="submit"
+                                  fullWidth
+                                >
+                                  Save Changes
+                                </Button>
+                              </Grid>
+                            </Grid>
+                          </form>
+                        </Box>
+                      )}
 
 
                       {/* Add Room Type button */}
@@ -391,6 +391,13 @@ export default function Hotels() {
           </div>
         </div>
       }
+      {!signedIn &&
+        <div className="min-h-screen pt-20 pb-8 bg-gray-50 shadow-sm mt-10">
+          <div className="container mx-auto px-4 text-black">
+              <Typography variant="h2">Please sign in to view your hotels.</Typography>
+          </div>
+        </div>
+      }
     </div>
   );
 }
@@ -415,7 +422,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
     return (
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item>
             <TextField
               label="Room Type"
               fullWidth
@@ -424,7 +431,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
               required
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item>
             <TextField
               label="Total Rooms"
               fullWidth
@@ -434,7 +441,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
               type="number"
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item>
             <TextField
               label="Amenities"
               fullWidth
@@ -443,7 +450,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
               required
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item>
             <TextField
               label="Price per Night"
               fullWidth
@@ -550,7 +557,7 @@ const RoomTypeForm = ({ hotelId, handleAddRoomType }) => {
                 </Box>
           ))
         ) : (
-          <Typography>No room types available for this hotel.</Typography>
+          <Typography s>No room types available for this hotel.</Typography>
         )}
       </Box>
     );
