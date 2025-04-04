@@ -33,7 +33,6 @@ for (let i = 0; i < 100; i++) {
         data: {
             ownerId: Math.floor(Math.random() * 10) + 1,
             name: `Hotel ${i + 1}`,
-            logoId: Math.floor(Math.random() * 10) + 1,
             address: `Address ${i + 1}`,
             city: cities[Math.floor(Math.random() * 5) + 1],
             starRating: Math.floor(Math.random() * 5) + 1
