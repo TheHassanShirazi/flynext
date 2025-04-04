@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Button from "@/components/button"; // Default import
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useTheme } from "@/context/ThemeContext";
 
 export default function Navbar() {
@@ -14,6 +16,7 @@ export default function Navbar() {
     const [ownsHotels, setOwnsHotels] = useState<boolean>(false); // State to track if user owns any hotels
     const [unreadNotifications, setUnreadNotifications] = useState([]); // State for notifications
     const [isDropdownVisible, setIsDropdownVisible] = useState(false); // State to control dropdown visibility
+    const [profilePicture, setProfilePicture] = useState<string | null>(null);
     const { theme, toggleTheme } = useTheme();
 
     useEffect(() => {
@@ -41,7 +44,28 @@ export default function Navbar() {
             }
         };
 
+        // Get profile picture
+        const fetchProfilePicture = async () => {
+            const accessToken = localStorage.getItem("accessToken");
+            if (accessToken) {
+                try {
+                    const response = await fetch("http://localhost:3000/api/auth/profile", {
+                        headers: {
+                            "Authorization": `Bearer ${accessToken}`,
+                        },
+                    });
+                    const data = await response.json();
+                    if (data.user.profilePic) {
+                        setProfilePicture(data.user.profilePic.fileName);
+                    }
+                } catch (error) {
+                    console.error("Error fetching profile picture:", error);
+                }
+            }
+        };
+
         checkUserHotels();
+        fetchProfilePicture();
     }, []);
 
     useEffect(() => {
@@ -180,6 +204,23 @@ export default function Navbar() {
                             <Button className="!py-2" onClick={handleLogout}>
                                 Logout
                             </Button>
+                            {firstName && (
+                                <Link href="/edit-profile" className="flex items-center ml-4">
+                                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+                                        {profilePicture ? (
+                                            <Image
+                                                src={`/uploads/${profilePicture}`}
+                                                alt="Profile"
+                                                width={40}
+                                                height={40}
+                                                className="object-cover w-full h-full"
+                                            />
+                                        ) : (
+                                            <AccountCircleIcon className="w-full h-full text-gray-400" />
+                                        )}
+                                    </div>
+                                </Link>
+                            )}
                         </>
                     ) : (
                         <>                            
