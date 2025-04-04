@@ -1,11 +1,21 @@
+// flightSearchBar.tsx
+
 'use client';
 
-import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
+import { Box, Button, TextField, Typography, CircularProgress } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+
+interface Flight {
+  id: string;
+  origin: string;
+  destination: string;
+  date: string;
+  price: number;
+}
 
 function FlightSearchBar() {
   const router = useRouter();
@@ -14,11 +24,34 @@ function FlightSearchBar() {
   const [date, setDate] = useState<Date | null>(null);
   const [dateString, setDateString] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
+  const [flights, setFlights] = useState<Flight[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (origin.trim() && destination.trim() && date) {
+      setLoading(true);
+      setError(null);
       const dateStr = date.toISOString().split('T')[0];
-      router.push(`/flights/search?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&date=${dateStr}`);
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/flights?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&date=${dateStr}`);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          setError(errorData.error || "Failed to fetch flights");
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        setFlights(data.flights);
+        setLoading(false);
+
+      } catch (err) {
+        setError("An unexpected error occurred.");
+        setLoading(false);
+      }
     }
   };
 
@@ -125,7 +158,7 @@ function FlightSearchBar() {
   };
 
   return (
-    <div className="relative">
+    <Box>
       <div className="bg-white rounded-lg shadow-md p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
@@ -177,14 +210,39 @@ function FlightSearchBar() {
             )}
           </div>
         </div>
+        <button
+          onClick={handleSearch}
+          className="mt-4 bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-base font-semibold"
+        >
+          Search Flights
+        </button>
       </div>
-      <button
-        onClick={handleSearch}
-        className="absolute right-4 top-4 bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-base font-semibold"
-      >
-        Search Flights
-      </button>
-    </div>
+
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {error && (
+        <Box sx={{ marginTop: 2, color: 'red' }}>
+          {error}
+        </Box>
+      )}
+
+      {flights.length > 0 && (
+        <Box sx={{ marginTop: 2 }}>
+          <Typography variant="h6">Flights:</Typography>
+          <ul>
+            {flights.map((flight) => (
+              <li key={flight.id}>
+                {flight.origin} to {flight.destination} on {flight.date}: ${flight.price}
+              </li>
+            ))}
+          </ul>
+        </Box>
+      )}
+    </Box>
   );
 }
 

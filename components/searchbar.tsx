@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
+import { Box, Button, TextField, Typography, IconButton, CircularProgress } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import PersonIcon from "@mui/icons-material/Person";
@@ -10,6 +10,14 @@ import { useEffect, useRef, useState } from "react";
 
 interface SearchBarProps {
   onBeforeSearch?: (params: URLSearchParams) => void;
+}
+
+interface Flight {
+  id: string;
+  origin: string;
+  destination: string;
+  date: string;
+  price: number;
 }
 
 function TravelersSelector({ onSelect, onClose, currentValue }: {
@@ -80,8 +88,7 @@ function TravelersSelector({ onSelect, onClose, currentValue }: {
   );
 }
 
-
-function Calendar({ onSelect, onClose, selectedDates }: { 
+function Calendar({ onSelect, onClose, selectedDates }: {
   onSelect: (dates: { start: Date; end: Date }) => void;
   onClose: () => void;
   selectedDates: { start: Date | null; end: Date | null };
@@ -101,7 +108,7 @@ function Calendar({ onSelect, onClose, selectedDates }: {
 
   const handleDateClick = (day: number) => {
     const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    
+
     if (selecting === 'start') {
       setTempDates({ start: selectedDate, end: null });
       setSelecting('end');
@@ -114,9 +121,9 @@ function Calendar({ onSelect, onClose, selectedDates }: {
 
   const handleDone = () => {
     if (tempDates.start && tempDates.end) {
-      onSelect({ 
+      onSelect({
         start: tempDates.start,
-        end: tempDates.end 
+        end: tempDates.end
       });
       onClose();
     }
@@ -134,9 +141,9 @@ function Calendar({ onSelect, onClose, selectedDates }: {
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
       const isSelected = tempDates.start && date.getTime() === tempDates.start.getTime() ||
-                        tempDates.end && date.getTime() === tempDates.end.getTime();
-      const isInRange = tempDates.start && tempDates.end && 
-                       date > tempDates.start && date < tempDates.end;
+        tempDates.end && date.getTime() === tempDates.end.getTime();
+      const isInRange = tempDates.start && tempDates.end &&
+        date > tempDates.start && date < tempDates.end;
 
       days.push(
         <button
@@ -187,7 +194,6 @@ function Calendar({ onSelect, onClose, selectedDates }: {
   );
 }
 
-
 export default function SearchBar(props: SearchBarProps) {
   const router = useRouter();
   const [searchType, setSearchType] = useState<"hotels" | "flights">("hotels");
@@ -200,24 +206,62 @@ export default function SearchBar(props: SearchBarProps) {
     start: null,
     end: null
   });
+  const [flights, setFlights] = useState<Flight[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [dateForFlightSearch, setDateForFlightSearch] = useState<Date | null>(null);
+  const [dateString, setDateString] = useState("");
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (searchQuery.trim()) {
-      if (props.onBeforeSearch) {
-        const params = new URLSearchParams();
-        params.set('searchType', searchType);
-        params.set('searchQuery', searchQuery);
-        params.set('travelers', travelers);
-        params.set('dates', dates);
-        props.onBeforeSearch(params);
+      if (searchType === "flights" && dateForFlightSearch) {
+        setLoading(true);
+        setError(null);
+        const dateStr = dateForFlightSearch.toISOString().split('T')[0];
+        try {
+          const response = await fetch(`http://localhost:3000/api/flights/search/?origin=${encodeURIComponent(searchQuery)}&destination=${encodeURIComponent(searchQuery)}&date=${dateStr}`);
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            setError(errorData.error || "Failed to fetch flights");
+            setLoading(false);
+            return;
+          }
+
+          const data = await response.json();
+          setFlights(data.flights);
+          setLoading(false);
+        } catch (err) {
+          setError("An unexpected error occurred.");
+          setLoading(false);
+        }
+      } else if (searchType === 'hotels') {
+        if (props.onBeforeSearch) {
+          const params = new URLSearchParams();
+          params.set('searchType', searchType);
+          params.set('searchQuery', searchQuery);
+          params.set('travelers', travelers);
+          params.set('dates', dates);
+          props.onBeforeSearch(params);
+        }
+        router.push(`/search/${searchType}/city=${encodeURIComponent(searchQuery)}`);
       }
-      router.push(`/search/${searchType}/city=${encodeURIComponent(searchQuery)}`);
     }
   };
 
   const handleDateSelect = (dates: { start: Date; end: Date }) => {
     setSelectedDates(dates);
     setDates(`${dates.start.toLocaleDateString()} - ${dates.end.toLocaleDateString()}`);
+  };
+
+  const handleDateSelectForFlight = (selectedDate: Date | null) => {
+    setDateForFlightSearch(selectedDate);
+    if (selectedDate) {
+      setDateString(selectedDate.toLocaleDateString());
+    } else {
+      setDateString("");
+    }
+    setShowCalendar(false);
   };
 
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -319,13 +363,13 @@ export default function SearchBar(props: SearchBarProps) {
     {/* Date Picker */}
     <Box sx={{ position: "relative" }} ref={calendarRef}>
       <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
-        Dates
+        {searchType === "hotels" ? "Dates" : "Date"}
       </Typography>
       <TextField
         fullWidth
         variant="outlined"
         placeholder="Select dates"
-        value={dates}
+        value={searchType === "hotels" ? dates : dateString}
         onClick={() => setShowCalendar(true)}
         InputProps={{
           startAdornment: <DateRangeIcon sx={{ color: "gray", marginRight: 1 }} />,
@@ -346,45 +390,51 @@ export default function SearchBar(props: SearchBarProps) {
             mt: 1,
           }}
         >
-          <Calendar onSelect={handleDateSelect} onClose={() => setShowCalendar(false)} selectedDates={selectedDates} />
+          {searchType === "hotels" ? (
+            <Calendar onSelect={handleDateSelect} onClose={() => setShowCalendar(false)} selectedDates={selectedDates} />
+          ) : (
+            <Calendar onSelect={(dates: { start: Date; end: Date }) => handleDateSelectForFlight(dates.start)} onClose={() => setShowCalendar(false)} selectedDates={{ start: dateForFlightSearch, end: null }} />
+          )}
         </Box>
       )}
     </Box>
 
     {/* Travelers Input */}
-    <Box sx={{ position: "relative" }} ref={travelersRef}>
-      <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
-        Travelers & Rooms
-      </Typography>
-      <TextField
-        fullWidth
-        variant="outlined"
-        placeholder="Select travelers"
-        value={travelers}
-        onClick={() => setShowTravelers(true)}
-        InputProps={{
-          startAdornment: <PersonIcon sx={{ color: "gray", marginRight: 1 }} />,
-          readOnly: true,
-        }}
-      />
-      {showTravelers && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            zIndex: 10,
-            width: "100%",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: 3,
-            mt: 1,
+    {searchType === "hotels" && (
+      <Box sx={{ position: "relative" }} ref={travelersRef}>
+        <Typography variant="caption" sx={{ fontWeight: "bold", color: "gray" }}>
+          Travelers & Rooms
+        </Typography>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Select travelers"
+          value={travelers}
+          onClick={() => setShowTravelers(true)}
+          InputProps={{
+            startAdornment: <PersonIcon sx={{ color: "gray", marginRight: 1 }} />,
+            readOnly: true,
           }}
-        >
-          <TravelersSelector onSelect={setTravelers} onClose={() => setShowTravelers(false)} currentValue={travelers} />
-        </Box>
-      )}
-    </Box>
+        />
+        {showTravelers && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              zIndex: 10,
+              width: "100%",
+              backgroundColor: "white",
+              borderRadius: "8px",
+              boxShadow: 3,
+              mt: 1,
+            }}
+          >
+            <TravelersSelector onSelect={setTravelers} onClose={() => setShowTravelers(false)} currentValue={travelers} />
+          </Box>
+        )}
+      </Box>
+    )}
 
     {/* Search Button */}
     <Button
@@ -403,6 +453,30 @@ export default function SearchBar(props: SearchBarProps) {
       <SearchIcon sx={{ fontSize: "2rem" }} />
     </Button>
   </Box>
+  {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {error && (
+        <Box sx={{ marginTop: 2, color: 'red' }}>
+          {error}
+        </Box>
+      )}
+
+      {flights.length > 0 && (
+        <Box sx={{ marginTop: 2 }}>
+          <Typography variant="h6">Flights:</Typography>
+          <ul>
+            {flights.map((flight) => (
+              <li key={flight.id}>
+                {flight.origin} to {flight.destination} on {flight.date}: ${flight.price}
+              </li>
+            ))}
+          </ul>
+        </Box>
+      )}
 </Box>
 
   );
