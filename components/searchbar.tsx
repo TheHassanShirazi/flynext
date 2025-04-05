@@ -6,7 +6,7 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import PersonIcon from "@mui/icons-material/Person";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-
+import FlightResults from "./flightResults";
 
 interface Flight {
   id: string;
@@ -494,22 +494,12 @@ export default function SearchBar() {
         </Box>
       )}
 
-      {flights.length > 0 && (
-        <Box sx={{ marginTop: 2 }}>
-          <Typography variant="h6" sx={{ color: 'black' }}>Flights:</Typography>
-          <List>
-            {flights.map((flight) => (
-              <ListItem key={flight.id}>
-          <ListItemText
-            primaryTypographyProps={{ sx: { color: 'black' } }}
-            secondaryTypographyProps={{ sx: { color: 'black' } }}
-            primary={`${flight.origin.city} (${flight.origin.code}) to ${flight.destination.city} (${flight.destination.code})`}
-            secondary={`Departure: ${new Date(flight.departureTime).toLocaleString()}, Arrival: ${new Date(flight.arrivalTime).toLocaleString()}, Price: ${flight.price} ${flight.currency}`}
-          />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
+      {searchType === "flights" && (
+        <FlightResults
+          flights={flights}
+          loading={loading}
+          error={error}
+        />
       )}
     </Box>
   );
