@@ -21,7 +21,6 @@ export default function EditProfilePage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
   const router = useRouter();
 
@@ -53,7 +52,7 @@ export default function EditProfilePage() {
         if (data.user.profilePic) {
           setProfilePicPreview(`/uploads/${data.user.profilePic.fileName}`);
         }
-      } catch (err: any) {
+      } catch (err) {
         setError(err.message || 'An error occurred fetching profile.');
       }
     };
@@ -89,7 +88,7 @@ export default function EditProfilePage() {
       }
 
       router.push('http://localhost:3000'); // Redirect to dashboard after update
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'An error occurred updating profile.');
     }
   };
@@ -134,7 +133,7 @@ export default function EditProfilePage() {
       if (data.profilePic?.fileName) {
         setProfilePicPreview(`/uploads/${data.profilePic.fileName}`);
       }
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'An error occurred uploading profile picture.');
       // Reset preview if upload failed
       setProfilePicPreview(user?.profilePic ? `/uploads/${user.profilePic}` : null);
