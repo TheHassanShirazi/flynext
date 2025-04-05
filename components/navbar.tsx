@@ -55,7 +55,7 @@ export default function Navbar() {
                         },
                     });
                     const data = await response.json();
-                    if (data.user.profilePic) {
+                    if (data.user && data.user.profilePic) {
                         setProfilePicture(data.user.profilePic.fileName);
                     }
                 } catch (error) {
